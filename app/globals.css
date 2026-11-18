@@ -1,0 +1,34 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #2f5d62;
+  --color-primary-soft: #e6efee;
+  --color-bg: #f7f7f5;
+  --color-surface: #ffffff;
+  --color-text: #1f2937;
+  --color-text-sub: #6b7280;
+  --color-border: #e5e7eb;
+  --color-warn: #c2410c;
+  --color-warn-soft: #fff1e8;
+  --color-done: #15803d;
+
+  --font-sans: "Pretendard Variable", Pretendard, -apple-system,
+    BlinkMacSystemFont, system-ui, "Apple SD Gothic Neo", "Noto Sans KR",
+    sans-serif;
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  line-height: 1.5;
+}
+
+/* 이용자 화면 공통 폭: 최대 480px 가운데 정렬 (/partner는 쓰지 않는다) */
+.mobile-frame {
+  width: 100%;
+  max-width: 480px;
+  margin-inline: auto;
+  min-height: 100dvh;
+  padding-inline: 16px;
+}
