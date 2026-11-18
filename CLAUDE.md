@@ -79,7 +79,7 @@
 2. 작업 시작: `git checkout main` → `git pull origin main` → `git checkout -b feature/작업번호-영문설명` (예: `feature/S2-ui`). 현재 브랜치가 main이면 작업 전에 반드시 브랜치를 먼저 만든다.
 3. 커밋 메시지: `종류(작업번호): 한 일` — 종류는 feat, fix, style, refactor, docs, chore. 예: `feat(S2): 버튼과 카드 부품 추가`
 4. push 전에 `git branch --show-current`로 브랜치 이름을 사용자에게 보여 주고, main이면 멈춘다. push는 `git push -u origin 브랜치이름`.
-5. PR: 제목 `[작업번호] 이름: 한 일`, 본문은 `.github/pull_request_template.md` 양식. '내가 판단하거나 고친 것' 칸은 사용자가 직접 쓰도록 비워 둔다. GitHub CLI(`gh`)가 있으면 `gh pr create`로 만들고, 없으면 GitHub에서 여는 방법을 안내한다.
+5. PR: 제목 `[작업번호] 이름: 한 일`, 본문은 `.github/pull_request_template.md` 양식. GitHub CLI(`gh`)가 있으면 `gh pr create`로 만들고, 없으면 GitHub에서 여는 방법을 안내한다.
 6. **merge는 AI가 하지 않는다.** 정예준이 다음 날 낮 12시까지 리뷰하고 Squash and merge한다. 정예준이 못 하면 PR 작성자가 아닌 다른 팀원이 리뷰 체크리스트로 확인한 뒤 merge한다. 팀원은 자기 PR을 스스로 merge하지 않는다.
    - 정예준(PM)의 PR은 정예준이 직접 merge한다.
 7. 버그 수정 브랜치는 `fix/Q-01-설명`, PR 제목은 `[Q-01] 이름: 고친 것`.
