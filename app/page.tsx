@@ -1,86 +1,62 @@
+import { Gowun_Batang } from "next/font/google";
 import Link from "next/link";
+import LandingMenu from "./LandingMenu";
+import "./landing.css";
 
-const NOTES = [
-  "무료로 쓸 수 있어요",
-  "진행 상황이 저장돼요",
-  "주민등록번호와 조회 결과 원문은 저장하지 않아요",
-  "AI 기능이 포함돼 있어요",
+// 제목에만 쓰는 명조 계열 글꼴: 차분하고 무게 있는 분위기
+const serif = Gowun_Batang({
+  weight: ["400", "700"],
+  preload: false,
+  display: "swap",
+});
+
+const STEPS = [
+  { name: "사망신고", when: "알게 된 날부터 1개월 안" },
+  { name: "상속포기·한정승인 결정", when: "알게 된 날부터 3개월 안" },
+  { name: "상속세 신고", when: "상속이 시작된 달의 말일부터 6개월 안" },
 ];
-
-function Check() {
-  return (
-    <svg
-      aria-hidden
-      viewBox="0 0 20 20"
-      className="mt-[3px] h-4 w-4 shrink-0 text-primary"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2.2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M4 10.5l4 4 8-9" />
-    </svg>
-  );
-}
 
 export default function Page() {
   return (
-    <main className="mobile-frame flex flex-col pb-6 pt-5">
-      {/* 하늘상조 로고 자리 */}
-      <div className="flex items-center gap-2">
-        <div
-          aria-hidden
-          className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-[15px] font-bold text-white"
-        >
-          하
+    <div className="lp-page">
+      <main className="mobile-frame lp-frame">
+        <header className="lp-header">
+          <span className={`lp-wordmark ${serif.className}`}>남김</span>
+          <LandingMenu />
+        </header>
+
+        <section className="lp-hero">
+          <h1 className={`lp-title ${serif.className}`}>
+            장례 이후에 해야 할 일,
+            <br />
+            기한 순서대로
+          </h1>
+          <p className="lp-lead">
+            질문 몇 개로 해지, 명의변경, 상속 업무를 한곳에서
+          </p>
+
+          <ol className="lp-timeline" aria-label="주요 기한">
+            {STEPS.map((s) => (
+              <li key={s.name} className="lp-step">
+                <p className="lp-step-name">{s.name}</p>
+                <p className="lp-step-when">{s.when}</p>
+              </li>
+            ))}
+          </ol>
+        </section>
+
+        <div className="lp-bottom">
+          {/* 임시 버튼: S2 공통 Button이 main에 들어오면 Y7에서 교체하고 로그인을 연결해요 */}
+          <button type="button" className="lp-cta">
+            Google 계정으로 시작하기
+          </button>
+          <nav className="lp-links">
+            <Link href="/about" className="lp-link">
+              이용 안내
+            </Link>
+          </nav>
         </div>
-        <span className="text-[15px] font-bold">하늘상조</span>
-      </div>
-
-      <div className="flex-1 pt-20">
-        <p className="text-[16px] font-bold text-primary">남김</p>
-        <h1 className="mt-3 break-keep text-[28px] font-bold leading-[1.35] tracking-[-0.02em]">
-          장례 이후 챙겨야 할 일,
-          <br />
-          한곳에서 정리해요
-        </h1>
-        <p className="mt-4 break-keep text-[16px] text-text-sub">
-          해지·명의변경·상속 업무를 질문 몇 개로 정리해 드려요.
-          <br />
-          천천히, 하나씩 도와드릴게요.
-        </p>
-      </div>
-
-      <div>
-        <ul className="space-y-2 pb-6">
-          {NOTES.map((note) => (
-            <li
-              key={note}
-              className="flex gap-2 text-[14px] leading-snug text-text-sub"
-            >
-              <Check />
-              <span className="break-keep">{note}</span>
-            </li>
-          ))}
-        </ul>
-
-        {/* 임시 버튼: S2 공통 Button이 main에 들어오면 Y7에서 교체하고 로그인을 연결해요 */}
-        <button
-          type="button"
-          className="h-14 w-full rounded-2xl bg-primary px-4 text-[17px] font-bold text-white"
-        >
-          Google 계정으로 시작하기
-        </button>
-        <nav className="mt-2 flex justify-center gap-6 text-[14px] text-text-sub">
-          <Link href="/about" className="inline-flex min-h-11 items-center">
-            이용 안내
-          </Link>
-          <Link href="/partner" className="inline-flex min-h-11 items-center">
-            파트너용 화면
-          </Link>
-        </nav>
-      </div>
-    </main>
+      </main>
+    </div>
   );
 }
