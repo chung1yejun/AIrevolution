@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import AnswerSummary from "./AnswerSummary";
 import QuestionField from "./QuestionField";
 import { QUESTIONS, isAnswered, type Answers } from "./questions";
 
@@ -9,10 +10,15 @@ const TOTAL_STEPS = QUESTIONS.length;
 export default function OnboardingFlow() {
   const [step, setStep] = useState(1);
   const [answers, setAnswers] = useState<Answers>({});
+  const [done, setDone] = useState(false);
 
   const question = QUESTIONS[step - 1];
   const percent = (step / TOTAL_STEPS) * 100;
   const canNext = isAnswered(question, answers);
+
+  if (done) {
+    return <AnswerSummary answers={answers} onBack={() => setDone(false)} />;
+  }
 
   return (
     <div className="flex min-h-dvh flex-col py-6">
@@ -58,16 +64,16 @@ export default function OnboardingFlow() {
             이전
           </button>
         )}
-        {step < TOTAL_STEPS && (
-          <button
-            type="button"
-            disabled={!canNext}
-            onClick={() => setStep((s) => s + 1)}
-            className="min-h-12 flex-1 rounded-xl bg-primary px-4 text-[16px] font-bold text-white disabled:bg-border disabled:text-text-sub"
-          >
-            다음
-          </button>
-        )}
+        <button
+          type="button"
+          disabled={!canNext}
+          onClick={() =>
+            step < TOTAL_STEPS ? setStep((s) => s + 1) : setDone(true)
+          }
+          className="min-h-12 flex-1 rounded-xl bg-primary px-4 text-[16px] font-bold text-white disabled:bg-border disabled:text-text-sub"
+        >
+          {step < TOTAL_STEPS ? "다음" : "할 일 만들기"}
+        </button>
       </footer>
     </div>
   );
