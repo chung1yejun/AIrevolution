@@ -3,11 +3,11 @@
 @theme {
   --color-primary: #2f5d62;
   --color-primary-soft: #e6efee;
-  --color-bg: #f7f7f5;
-  --color-surface: #ffffff;
-  --color-text: #1f2937;
-  --color-text-sub: #6b7280;
-  --color-border: #e5e7eb;
+  --color-bg: #ffffff;
+  --color-surface: #f2f4f6;
+  --color-text: #191f28;
+  --color-text-sub: #6b7684;
+  --color-border: #e5e8eb;
   --color-warn: #c2410c;
   --color-warn-soft: #fff1e8;
   --color-done: #15803d;
