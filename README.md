@@ -20,4 +20,4 @@ npm run dev
 - 날짜별 작업표와 작업 안내서: [tasks/README.md](tasks/README.md)
 
 ## 배포 주소
-(Vercel 배포 후 채웁니다)
+https://namgim-zeta.vercel.app
