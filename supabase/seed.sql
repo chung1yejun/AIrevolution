@@ -43,4 +43,40 @@ on conflict (key) do update set
   name = excluded.name,
   issuer = excluded.issuer;
 
+with requirements (institution_key, document_keys) as (
+  values
+    ('haneul_bank', array['family_rel', 'basic_cert', 'applicant_id', 'inherit_agree', 'seal_cert']),
+    ('hanbit_bank', array['family_rel', 'basic_cert', 'applicant_id', 'inherit_agree', 'seal_cert']),
+    ('dundun_life', array['death_cert', 'family_rel', 'basic_cert', 'applicant_id']),
+    ('purun_fire', array['death_cert', 'family_rel', 'basic_cert', 'applicant_id']),
+    ('baro_telecom', array['family_rel', 'basic_cert', 'applicant_id']),
+    ('nuri_mobile', array['family_rel', 'basic_cert', 'applicant_id']),
+    ('car_registry', array['family_rel', 'basic_cert', 'inherit_agree', 'seal_cert']),
+    ('community_center', array['death_cert', 'applicant_id']),
+    ('family_court', array['family_rel', 'basic_cert', 'seal_cert']),
+    ('tax_office', array['family_rel', 'basic_cert'])
+)
+insert into public.institution_documents (institution_id, document_id, copies)
+select institution.id, document.id, 1
+from requirements
+join public.institutions as institution on institution.key = requirements.institution_key
+join public.documents as document on document.key = any (requirements.document_keys)
+on conflict (institution_id, document_id) do update set
+  copies = excluded.copies;
+
+-- Agents have no unique key, so stable sample UUIDs make repeated runs safe.
+insert into public.agents (id, name, region, cases, fee, is_sample)
+values
+  ('07f603ac-847e-4d39-9406-c78e7bb5f1b3', '김도윤 행정사', '대구', 132, '건당 15만 원부터', true),
+  ('4f22da97-2b3c-40c0-8a63-5cff884ea8e2', '이서진 행정사', '대구', 87, '건당 12만 원부터', true),
+  ('6b7b888a-ed37-49a8-8a5d-44f3352c02fe', '박하은 행정사', '서울', 210, '건당 18만 원부터', true),
+  ('afe6c6d3-cdbc-4eaa-ab18-ee7b80972686', '최민준 행정사', '경기', 64, '건당 13만 원부터', true),
+  ('ed5a01e0-cb41-4625-90c1-39c52be7720f', '정유나 행정사', '부산', 95, '건당 14만 원부터', true)
+on conflict (id) do update set
+  name = excluded.name,
+  region = excluded.region,
+  cases = excluded.cases,
+  fee = excluded.fee,
+  is_sample = excluded.is_sample;
+
 commit;
