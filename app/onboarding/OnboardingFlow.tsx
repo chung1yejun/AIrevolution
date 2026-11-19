@@ -1,13 +1,18 @@
 "use client";
 
 import { useState } from "react";
+import QuestionField from "./QuestionField";
+import { QUESTIONS, isAnswered, type Answers } from "./questions";
 
-const TOTAL_STEPS = 5;
+const TOTAL_STEPS = QUESTIONS.length;
 
 export default function OnboardingFlow() {
   const [step, setStep] = useState(1);
+  const [answers, setAnswers] = useState<Answers>({});
 
+  const question = QUESTIONS[step - 1];
   const percent = (step / TOTAL_STEPS) * 100;
+  const canNext = isAnswered(question, answers);
 
   return (
     <div className="flex min-h-dvh flex-col py-6">
@@ -30,11 +35,17 @@ export default function OnboardingFlow() {
       </header>
 
       <section className="flex-1 py-8">
-        {/* Step 2에서 질문 5개가 들어와요 */}
-        <h1 className="text-[22px] font-bold">질문 {step}</h1>
-        <p className="mt-2 text-[14px] text-text-sub">
-          질문 내용은 다음 단계에서 채워요.
-        </p>
+        <h1 className="break-keep text-[22px] font-bold">{question.title}</h1>
+        <div className="mt-6">
+          <QuestionField
+            key={question.key}
+            question={question}
+            value={answers[question.key]}
+            onChange={(v) =>
+              setAnswers((prev) => ({ ...prev, [question.key]: v }))
+            }
+          />
+        </div>
       </section>
 
       <footer className="flex gap-3">
@@ -50,8 +61,9 @@ export default function OnboardingFlow() {
         {step < TOTAL_STEPS && (
           <button
             type="button"
+            disabled={!canNext}
             onClick={() => setStep((s) => s + 1)}
-            className="min-h-12 flex-1 rounded-xl bg-primary px-4 text-[16px] font-bold text-white"
+            className="min-h-12 flex-1 rounded-xl bg-primary px-4 text-[16px] font-bold text-white disabled:bg-border disabled:text-text-sub"
           >
             다음
           </button>
