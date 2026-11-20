@@ -15,7 +15,7 @@ export function BottomTab() {
   const pathname = usePathname();
 
   return (
-    <nav aria-label="주요 메뉴" className="fixed inset-x-0 bottom-0 z-20 mx-auto w-full max-w-[480px] rounded-t-2xl border border-b-0 border-[var(--namgim-secondary)] bg-[var(--namgim-navy)] px-2 pb-[env(safe-area-inset-bottom)]">
+    <nav aria-label="주요 메뉴" className="fixed inset-x-0 bottom-0 z-20 mx-auto w-full max-w-[480px] rounded-t-2xl border border-b-0 border-[var(--namgim-secondary)] bg-[var(--namgim-navy)] px-2 pb-[env(safe-area-inset-bottom)] min-[1280px]:max-w-[1056px]">
       <ul className="grid h-16 grid-cols-4 gap-1 py-1">
         {tabs.map(({ href, label, path }) => {
           const active = pathname === href || pathname.startsWith(href + "/");
