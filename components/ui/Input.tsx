@@ -1,3 +1,4 @@
+import styles from "./theme";
 import { useId, type ComponentPropsWithoutRef } from "react";
 
 // <Input label="기관 이름" error="기관 이름을 입력해 주세요." />
@@ -24,9 +25,9 @@ export function Input({
         id={inputId}
         aria-invalid={error ? true : invalid}
         aria-describedby={[describedBy, error && errorId].filter(Boolean).join(" ") || undefined}
-        className={`h-14 w-full min-w-0 rounded-2xl bg-surface px-4 focus:outline-2 focus:-outline-offset-2 focus:outline-primary disabled:opacity-60 ${className}`}
+        className={`h-14 w-full min-w-0 rounded-2xl px-4 ${styles.field} ${className}`}
       />
-      {error && <p id={errorId} className="text-sm text-warn">{error}</p>}
+      {error && <p id={errorId} className={`text-sm ${styles.error}`}>{error}</p>}
     </div>
   );
 }

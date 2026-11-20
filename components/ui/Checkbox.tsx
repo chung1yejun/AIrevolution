@@ -1,3 +1,4 @@
+import styles from "./theme";
 import type { ComponentPropsWithoutRef, ReactNode } from "react";
 
 // <Checkbox label="서류를 준비했어요" defaultChecked />
@@ -12,7 +13,7 @@ export function Checkbox({ label, className = "", disabled, ...props }: Checkbox
         {...props}
         type="checkbox"
         disabled={disabled}
-        className="size-6 shrink-0 accent-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+        className={`size-6 shrink-0 ${styles.checkbox}`}
       />
       <span className="min-w-0 wrap-anywhere">{label}</span>
     </label>
