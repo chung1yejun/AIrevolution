@@ -1,5 +1,6 @@
 import { Button, Card, Checkbox, Chrysanthemum, Input, ProgressBar, Select, Tag } from "@/components/ui";
 import styles from "@/components/ui/theme";
+import { LayoutExamples } from "./LayoutExamples";
 
 export default function DevUiPage() {
   return (
@@ -47,6 +48,7 @@ export default function DevUiPage() {
           </Select>
         </section>
       </div>
+      <LayoutExamples />
     </main>
   );
 }
