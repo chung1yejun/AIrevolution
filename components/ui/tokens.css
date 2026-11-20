@@ -143,7 +143,7 @@
 .namgim-tagUrgent { color: var(--namgim-error-ink); }
 
 .namgim-flower { fill: var(--namgim-ivory); }
-.namgim-stem { fill: var(--namgim-muted); }
+.namgim-stem { fill: #a9a093; }
 
 .namgim-preview {
   min-height: 100dvh;
@@ -167,4 +167,40 @@
 .namgim-previewInner section {
   border-top: 1px solid var(--namgim-secondary);
   padding-block: 24px;
+}
+
+@media (min-width: 1280px) {
+  .namgim-previewInner {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 40px;
+    align-items: start;
+    max-width: 1200px;
+    padding-inline: 32px;
+  }
+
+  .namgim-previewHeader {
+    grid-column: 1 / -1;
+  }
+
+  .namgim-previewInner section {
+    min-width: 0;
+  }
+
+  /* Lay out button variants and form fields side by side in this preview. */
+  .namgim-previewInner section:is(:first-of-type, :last-of-type) {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+    gap: 16px;
+  }
+
+  .namgim-previewInner section:is(:first-of-type, :last-of-type) > * {
+    margin-block: 0;
+  }
+
+  .namgim-previewInner section:is(:first-of-type, :last-of-type) > h2,
+  .namgim-previewInner section:last-of-type > :last-child {
+    grid-column: 1 / -1;
+  }
 }

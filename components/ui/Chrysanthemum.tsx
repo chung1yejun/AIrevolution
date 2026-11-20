@@ -1,16 +1,33 @@
 import styles from "./theme";
 
+const sidePetals = [
+  "M32 40C25 36 22 26 23 16L25 10 29 13C33 19 33 29 32 40Z",
+  "M32 40C23 38 17 29 16 21L17 12 21 14C27 19 29 32 32 40Z",
+  "M32 40C21 41 12 33 10 25L10 18 14 19C21 24 23 36 32 40Z",
+  "M32 40C21 43 10 40 6 33L4 28 9 29C17 32 23 39 32 40Z",
+  "M32 40C23 45 11 46 5 41L1 38 6 36C16 36 23 42 32 40Z",
+  "M32 40C24 37 18 29 19 21L22 17 26 20C29 25 31 35 32 40Z",
+  "M32 40C25 36 23 25 25 19L28 15 32 20C34 27 33 35 32 40Z",
+];
+
 // <Chrysanthemum className="w-14" /> — decorative mark next to the service name.
 export function Chrysanthemum({ className }: { className?: string }) {
   return (
     <svg aria-hidden="true" focusable="false" viewBox="0 0 64 84" className={className}>
-      <path className={styles.stem} d="M31 39h2l1 42h-2l-1-17-7-9-10-4-7-10 12 2 7 5 6 12-1-2 7-10 7-5 12-2-8 10-10 4-6 9z" />
-      <g className={styles.flower} stroke="var(--namgim-navy)" strokeWidth="1.1" strokeLinejoin="round">
-        <path d="M32 42 18 44 8 41 2 35l11 1 9 2L8 33l-4-8 9 4-3-10 8 5-1-12 8 7 7-15 7 15 8-7-1 12 8-5-3 10 9-4-4 8-14 5 9-2 11-1-6 6-10 3z" />
-        <path d="M32 42 20 38 13 29 11 19l9 7 5 7-6-13 2-9 8 9 3 11 3-11 8-9 2 9-6 13 5-7 9-7-2 10-7 9z" />
-        <path d="m32 42-8-8-4-11 3-10 7 8 2 12 2-12 7-8 3 10-4 11z" />
-        <path d="m32 42-5-10-2-11 3-9 4-5 4 5 3 9-2 11z" />
-        <path d="m32 42-2-10 2-15 2 15z" fill="var(--namgim-field)" />
+      <g className={styles.stem}>
+        <path d="M30.8 39H33L33.4 81H31.3Z" />
+        <path d="M32 66L26 61 16 57 8 49 15 49 23 52 29 58Z" />
+        <path d="M32 66L38 61 48 57 56 49 49 49 41 52 35 58Z" />
+      </g>
+      <g className={styles.flower} stroke="var(--namgim-navy)" strokeWidth="0.95" strokeLinejoin="round">
+        <path d="M32 40C27 34 25 26 25 18L27 10 32 5 37 10 39 18C39 26 37 34 32 40Z" />
+        {sidePetals.map((path) => (
+          <g key={path}>
+            <path d={path} />
+            <path d={path} transform="translate(64 0) scale(-1 1)" />
+          </g>
+        ))}
+        <path d="M32 40C27 35 24 26 27 20L30 16 32 15 34 16 37 20C40 26 37 35 32 40Z" />
       </g>
     </svg>
   );
