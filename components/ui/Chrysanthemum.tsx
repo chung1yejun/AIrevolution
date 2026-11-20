@@ -20,7 +20,7 @@ export function Chrysanthemum({ className }: { className?: string }) {
         <path d="M32 66L38 61 48 57 56 49 49 49 41 52 35 58Z" />
       </g>
       <g className={styles.flower} stroke="var(--namgim-navy)" strokeWidth="0.95" strokeLinejoin="round">
-        <path d="M32 40C27 34 25 26 25 18L27 10 32 5 37 10 39 18C39 26 37 34 32 40Z" />
+        <path d="M32 40C27 34 25 26 25 18L27 11.5 32 9 37 11.5 39 18C39 26 37 34 32 40Z" />
         {sidePetals.map((path) => (
           <g key={path}>
             <path d={path} />
