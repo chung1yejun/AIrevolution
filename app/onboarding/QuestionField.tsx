@@ -26,10 +26,10 @@ export default function QuestionField({ question, value, onChange }: Props) {
               role="radio"
               aria-checked={selected}
               onClick={() => onChange(o.value)}
-              className={`flex min-h-12 w-full items-center rounded-xl border px-4 text-left text-[16px] ${
+              className={`flex min-h-14 w-full items-center rounded-2xl border px-4 text-left text-[16px] ${
                 selected
-                  ? "border-primary bg-primary-soft font-bold text-primary"
-                  : "border-border bg-surface"
+                  ? "border-primary bg-primary font-bold text-on-primary"
+                  : "border-text-sub/50 bg-transparent text-text"
               }`}
             >
               {o.label}
@@ -46,7 +46,7 @@ export default function QuestionField({ question, value, onChange }: Props) {
         aria-label={question.title}
         value={value ?? ""}
         onChange={(e) => onChange(e.target.value)}
-        className="h-12 w-full rounded-xl border border-border bg-surface px-4 text-[16px] focus:border-primary focus:outline-none"
+        className="h-14 w-full rounded-2xl border-2 border-transparent bg-field px-4 text-[16px] text-on-primary focus:border-on-primary aria-invalid:border-warn-ink aria-invalid:bg-primary"
       >
         <option value="" disabled>
           지역을 골라 주세요
@@ -71,7 +71,7 @@ export default function QuestionField({ question, value, onChange }: Props) {
         min={oneYearAgoKst()}
         max={todayKst()}
         onChange={(e) => onChange(e.target.value)}
-        className="h-12 w-full rounded-xl border border-border bg-surface px-4 text-[16px] focus:border-primary focus:outline-none"
+        className="h-14 w-full rounded-2xl border-2 border-transparent bg-field px-4 text-[16px] text-on-primary focus:border-on-primary aria-invalid:border-warn-ink aria-invalid:bg-primary"
       />
       {error ? (
         <p role="alert" className="mt-2 text-[14px] text-warn">
