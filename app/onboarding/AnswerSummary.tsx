@@ -10,12 +10,12 @@ export default function AnswerSummary({ answers, onBack }: Props) {
   return (
     <div className="flex min-h-dvh flex-col py-6">
       <section className="flex-1 py-8">
-        <h1 className="break-keep text-[22px] font-bold">답을 확인해요</h1>
+        <h1 className="break-keep font-serif text-[24px] leading-[1.4] font-bold">답을 확인해요</h1>
         <p className="mt-2 break-keep text-[14px] text-text-sub">
           아직 저장하지 않아요. 저장은 다음 작업에서 연결해요.
         </p>
 
-        <dl className="mt-6 space-y-3">
+        <dl className="mt-6">
           {QUESTIONS.map((q) => {
             const value = answers[q.key];
             const label =
@@ -25,7 +25,7 @@ export default function AnswerSummary({ answers, onBack }: Props) {
             return (
               <div
                 key={q.key}
-                className="rounded-2xl border border-border bg-surface p-4"
+                className="border-b border-border py-4"
               >
                 <dt className="break-keep text-[14px] text-text-sub">
                   {q.title}
@@ -39,7 +39,7 @@ export default function AnswerSummary({ answers, onBack }: Props) {
         </dl>
 
         <p className="mt-6 text-[12px] text-text-sub">보낼 값(API 모양)</p>
-        <pre className="mt-1 overflow-x-auto whitespace-pre-wrap break-all rounded-xl bg-primary-soft p-3 text-[12px]">
+        <pre className="mt-1 overflow-x-auto whitespace-pre-wrap break-all rounded-xl bg-surface p-3 text-[12px]">
           {JSON.stringify(answers, null, 2)}
         </pre>
       </section>
@@ -48,7 +48,7 @@ export default function AnswerSummary({ answers, onBack }: Props) {
         <button
           type="button"
           onClick={onBack}
-          className="min-h-12 w-full rounded-xl border border-primary bg-surface px-4 text-[16px] font-bold text-primary"
+          className="min-h-14 w-full rounded-2xl border border-primary bg-transparent px-4 text-[16px] font-bold text-primary"
         >
           답 고치기
         </button>

@@ -23,7 +23,7 @@ export default function OnboardingFlow() {
   return (
     <div className="flex min-h-dvh flex-col py-6">
       <header>
-        <p className="text-[14px] font-bold text-primary">
+        <p className="text-[14px] font-bold tabular-nums text-text-sub">
           {step}/{TOTAL_STEPS}
         </p>
         <div
@@ -31,7 +31,7 @@ export default function OnboardingFlow() {
           aria-valuemin={1}
           aria-valuemax={TOTAL_STEPS}
           aria-valuenow={step}
-          className="mt-2 h-2 w-full overflow-hidden rounded-full bg-border"
+          className="mt-2 h-2 w-full overflow-hidden rounded-full bg-surface"
         >
           <div
             className="h-full rounded-full bg-primary transition-[width]"
@@ -41,7 +41,7 @@ export default function OnboardingFlow() {
       </header>
 
       <section className="flex-1 py-8">
-        <h1 className="break-keep text-[22px] font-bold">{question.title}</h1>
+        <h1 className="break-keep font-serif text-[24px] leading-[1.4] font-bold">{question.title}</h1>
         <div className="mt-6">
           <QuestionField
             key={question.key}
@@ -59,7 +59,7 @@ export default function OnboardingFlow() {
           <button
             type="button"
             onClick={() => setStep((s) => s - 1)}
-            className="min-h-12 flex-1 rounded-xl border border-primary bg-surface px-4 text-[16px] font-bold text-primary"
+            className="min-h-14 flex-1 rounded-2xl border border-primary bg-transparent px-4 text-[16px] font-bold text-primary"
           >
             이전
           </button>
@@ -70,7 +70,7 @@ export default function OnboardingFlow() {
           onClick={() =>
             step < TOTAL_STEPS ? setStep((s) => s + 1) : setDone(true)
           }
-          className="min-h-12 flex-1 rounded-xl bg-primary px-4 text-[16px] font-bold text-white disabled:bg-border disabled:text-text-sub"
+          className="min-h-14 flex-1 rounded-2xl bg-primary px-4 text-[16px] font-bold text-on-primary disabled:cursor-not-allowed disabled:bg-text-sub"
         >
           {step < TOTAL_STEPS ? "다음" : "할 일 만들기"}
         </button>

@@ -1,22 +1,8 @@
-/* 첫 화면 전용 스타일 (design.md와 별개로 시안을 먼저 확인하는 용도) */
-
-.lp-page {
-  --mist: #f3f5fa;
-  --ink: #131a2e;
-  --ink-sub: #59627a;
-  --line: #c9d1e3;
-  --celadon: #1d2f5e;
-  --celadon-press: #14224a;
-
-  background: var(--mist);
-  color: var(--ink);
-  min-height: 100dvh;
-}
+/* 첫 화면 전용 스타일. 색은 globals.css의 design.md 토큰을 써요 */
 
 .lp-frame {
   display: flex;
   flex-direction: column;
-  min-height: 100dvh;
   padding-top: 20px;
   padding-bottom: 24px;
 }
@@ -25,12 +11,15 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  min-height: 44px;
 }
 
 .lp-wordmark {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   font-size: 22px;
   font-weight: 700;
-  letter-spacing: -0.01em;
 }
 
 .lp-hero {
@@ -48,12 +37,11 @@
 .lp-lead {
   margin-top: 16px;
   font-size: 16px;
-  line-height: 1.6;
-  color: var(--ink-sub);
+  color: var(--color-text-sub);
   word-break: keep-all;
 }
 
-/* 기한 흐름: 서비스에서 가장 중요한 정보인 '기한'을 첫 화면에서 바로 보여 줘요 */
+/* 기한 흐름(Timeline): 서비스에서 가장 중요한 정보인 '기한'을 첫 화면에서 바로 보여 줘요 */
 .lp-timeline {
   position: relative;
   margin-top: 40px;
@@ -68,15 +56,15 @@
   top: 10px;
   bottom: 10px;
   width: 2px;
-  background: var(--line);
+  background: var(--color-border);
   transform-origin: top;
-  animation: draw 0.9s ease-out both;
+  animation: lp-draw 0.9s ease-out both;
 }
 
 .lp-step {
   position: relative;
   padding-bottom: 22px;
-  animation: appear 0.5s ease-out both;
+  animation: lp-appear 0.5s ease-out both;
 }
 
 .lp-step:last-child {
@@ -97,24 +85,25 @@
   content: "";
   position: absolute;
   left: -28px;
-  top: 6px;
+  top: 7px;
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  background: var(--mist);
-  border: 2px solid var(--celadon);
+  background: var(--color-bg);
+  border: 2px solid var(--color-primary);
 }
 
 .lp-step-name {
   font-size: 17px;
   font-weight: 700;
+  line-height: 1.4;
   word-break: keep-all;
 }
 
 .lp-step-when {
   margin-top: 2px;
   font-size: 15px;
-  color: var(--ink-sub);
+  color: var(--color-text-sub);
   font-variant-numeric: tabular-nums;
 }
 
@@ -123,46 +112,9 @@
   padding-top: 40px;
 }
 
-.lp-notes {
-  list-style: none;
-  border-top: 1px solid var(--line);
-  padding-top: 16px;
-  margin-bottom: 20px;
-  display: grid;
-  gap: 6px;
-  font-size: 14px;
-  line-height: 1.5;
-  color: var(--ink-sub);
-  word-break: keep-all;
-}
-
-.lp-cta {
-  display: block;
-  width: 100%;
-  height: 56px;
-  border: 0;
-  border-radius: 14px;
-  background: var(--celadon);
-  color: #fff;
-  font-size: 17px;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.lp-cta:active {
-  background: var(--celadon-press);
-}
-
-.lp-cta:focus-visible,
-.lp-link:focus-visible {
-  outline: 3px solid #7d91c9;
-  outline-offset: 2px;
-}
-
 .lp-links {
   display: flex;
   justify-content: center;
-  gap: 24px;
   margin-top: 4px;
 }
 
@@ -171,10 +123,10 @@
   align-items: center;
   min-height: 44px;
   font-size: 14px;
-  color: var(--ink-sub);
+  color: var(--color-text-sub);
 }
 
-@keyframes draw {
+@keyframes lp-draw {
   from {
     transform: scaleY(0);
   }
@@ -183,7 +135,7 @@
   }
 }
 
-@keyframes appear {
+@keyframes lp-appear {
   from {
     opacity: 0;
     transform: translateY(6px);
@@ -216,14 +168,8 @@
   border: 0;
   border-radius: 12px;
   background: transparent;
-  color: var(--ink);
+  color: var(--color-text);
   cursor: pointer;
-}
-
-.lp-menu-button:focus-visible,
-.lp-menu-item:focus-visible {
-  outline: 3px solid #7d91c9;
-  outline-offset: 2px;
 }
 
 .lp-menu-backdrop {
@@ -231,7 +177,7 @@
   inset: 0;
   z-index: 10;
   border: 0;
-  background: rgba(19, 26, 46, 0.25);
+  background: rgba(10, 16, 28, 0.45);
   cursor: default;
 }
 
@@ -244,8 +190,8 @@
   padding: 6px;
   list-style: none;
   border-radius: 16px;
-  background: #fff;
-  box-shadow: 0 8px 24px rgba(19, 26, 46, 0.16);
+  background: var(--color-primary);
+  box-shadow: 0 12px 32px rgba(10, 16, 28, 0.4);
 }
 
 .lp-menu-item {
@@ -255,9 +201,14 @@
   padding: 0 14px;
   border-radius: 10px;
   font-size: 16px;
-  color: var(--ink);
+  color: var(--color-on-primary);
 }
 
 .lp-menu-item:active {
-  background: var(--mist);
+  background: var(--color-field);
+}
+
+.lp-menu-item:focus-visible {
+  outline-color: var(--color-on-primary);
+  outline-offset: -2px;
 }
