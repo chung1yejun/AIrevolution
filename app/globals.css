@@ -1,27 +1,46 @@
 @import "tailwindcss";
 
+/* 색과 글꼴: specs/design.md 1~2장. 김수아 시안(components/ui/tokens.css)과 같은 값 */
 @theme {
-  --color-primary: #2f5d62;
-  --color-primary-soft: #e6efee;
-  --color-bg: #ffffff;
-  --color-surface: #f2f4f6;
-  --color-text: #191f28;
-  --color-text-sub: #6b7684;
-  --color-border: #e5e8eb;
-  --color-warn: #c2410c;
-  --color-warn-soft: #fff1e8;
-  --color-done: #15803d;
+  --color-bg: #19263c;
+  --color-surface: #2f3e56;
+  --color-primary: #f5f1e9;
+  --color-on-primary: #19263c;
+  --color-text: #f5f1e9;
+  --color-text-sub: #aab5c9;
+  --color-border: #2f3e56;
+  --color-field: #e5e8ed;
+  --color-warn: #f2c1b9;
+  --color-warn-ink: #822f29;
+  --color-done: #b9d3b6;
+  --color-stem: #a9a093;
 
   --font-sans: "Pretendard Variable", Pretendard, -apple-system,
     BlinkMacSystemFont, system-ui, "Apple SD Gothic Neo", "Noto Sans KR",
     sans-serif;
 }
 
-body {
+/* 명조 제목 글꼴: app/layout.tsx에서 next/font로 불러온 변수를 써요 */
+@theme inline {
+  --font-serif: var(--font-gowun), "Nanum Myeongjo", serif;
+}
+
+html {
   background: var(--color-bg);
+}
+
+body {
+  /* 위쪽이 아주 조금 밝은 남색: 평평한 한 장보다 깊이감이 있어요 */
+  background: linear-gradient(180deg, #22314b 0, var(--color-bg) 420px)
+    no-repeat var(--color-bg);
   color: var(--color-text);
   font-family: var(--font-sans);
-  line-height: 1.5;
+  line-height: 1.6;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-text-sub);
+  outline-offset: 3px;
 }
 
 /* 이용자 화면 공통 폭: 최대 480px 가운데 정렬 (/partner는 쓰지 않는다) */

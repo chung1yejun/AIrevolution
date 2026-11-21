@@ -23,9 +23,9 @@ function Section({
   return (
     <section
       id={id}
-      className="scroll-mt-4 rounded-2xl border border-border bg-surface p-4"
+      className="scroll-mt-4 border-t border-border py-6"
     >
-      <h2 className="text-[18px] font-bold">{title}</h2>
+      <h2 className="break-keep text-[18px] font-bold">{title}</h2>
       <div className="mt-3 space-y-3 break-words text-[16px] leading-relaxed">
         {children}
       </div>
@@ -58,10 +58,10 @@ export default function Page() {
         >
           ←
         </Link>
-        <h1 className="text-[22px] font-bold">이용 안내</h1>
+        <h1 className="font-serif text-[24px] font-bold">이용 안내</h1>
       </header>
 
-      <div className="space-y-4">
+      <div className="mt-4">
         <Section title="남김은 어떤 서비스인가요">
           <p>
             남김은 장례 이후 유족이 해야 하는 해지, 명의변경, 상속 업무를 한곳에서
