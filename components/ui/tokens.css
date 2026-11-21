@@ -1,0 +1,206 @@
+:root {
+  --namgim-navy: #19263c;
+  --namgim-ivory: #f5f1e9;
+  --namgim-secondary: #2f3e56;
+  --namgim-muted: #aab5c9;
+  --namgim-field: #e5e8ed;
+  --namgim-error-ink: #822f29;
+  --namgim-error-light: #f2c1b9;
+}
+
+.namgim-theme {
+  background: var(--namgim-navy);
+  --namgim-error-text: var(--namgim-error-light);
+  color: var(--namgim-ivory);
+  font-family: var(--font-sans), "Noto Sans KR", sans-serif;
+}
+
+.namgim-primary, .namgim-card {
+  background: var(--namgim-ivory);
+  color: var(--namgim-navy);
+}
+
+.namgim-card {
+  --namgim-error-text: var(--namgim-error-ink);
+}
+
+.namgim-secondary, .namgim-ghost {
+  background: var(--namgim-navy);
+  color: var(--namgim-ivory);
+}
+
+.namgim-secondary {
+  border-color: var(--namgim-ivory);
+}
+
+.namgim-primary:hover:not(:disabled) {
+  background: var(--namgim-field);
+}
+
+:is(.namgim-secondary, .namgim-ghost):hover:not(:disabled) {
+  background: var(--namgim-secondary);
+}
+
+:is(.namgim-primary, .namgim-secondary, .namgim-ghost):focus-visible,
+.namgim-checkbox:focus-visible {
+  outline: 2px solid var(--namgim-muted);
+  outline-offset: 3px;
+}
+
+:is(.namgim-primary, .namgim-secondary, .namgim-ghost):disabled {
+  background: var(--namgim-muted);
+  border-color: transparent;
+  color: var(--namgim-navy);
+}
+
+.namgim-field {
+  background: var(--namgim-field);
+  color: var(--namgim-navy);
+  border: 2px solid transparent;
+}
+
+.namgim-field::placeholder {
+  color: var(--namgim-secondary);
+}
+
+.namgim-field[aria-invalid="true"] {
+  background: var(--namgim-ivory);
+  border-color: var(--namgim-error-ink);
+}
+
+.namgim-field:focus {
+  outline: 2px solid var(--namgim-muted);
+  outline-offset: 2px;
+  border-color: var(--namgim-navy);
+}
+
+.namgim-field:focus[aria-invalid="true"] {
+  border-color: var(--namgim-error-ink);
+}
+
+.namgim-field:disabled {
+  background: var(--namgim-muted);
+}
+
+.namgim-error {
+  color: var(--namgim-error-text, var(--namgim-error-ink));
+}
+
+.namgim-checkbox {
+  appearance: none;
+  display: grid;
+  place-content: center;
+  background: var(--namgim-navy);
+  border: 2px solid var(--namgim-muted);
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.namgim-checkbox:checked {
+  background: var(--namgim-ivory);
+  border-color: var(--namgim-muted);
+}
+
+.namgim-checkbox:checked::after {
+  content: "";
+  width: 11px;
+  height: 6px;
+  border: solid var(--namgim-navy);
+  border-width: 0 0 2px 2px;
+  transform: translateY(-1px) rotate(-45deg);
+}
+
+.namgim-checkbox:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+@media (forced-colors: active) {
+  .namgim-checkbox { appearance: auto; }
+  .namgim-checkbox::after { display: none; }
+}
+
+.namgim-track, .namgim-tagAi {
+  background: var(--namgim-secondary);
+  color: var(--namgim-ivory);
+}
+
+.namgim-fill, .namgim-tagUrgent {
+  background: var(--namgim-ivory);
+  color: var(--namgim-navy);
+}
+
+.namgim-tagSample {
+  background: var(--namgim-muted);
+  color: var(--namgim-navy);
+}
+
+.namgim-tagReview {
+  border-color: var(--namgim-muted);
+  color: var(--namgim-ivory);
+}
+
+.namgim-tagUrgent { color: var(--namgim-error-ink); }
+
+.namgim-flower { fill: var(--namgim-ivory); }
+.namgim-stem { fill: #a9a093; }
+
+.namgim-preview {
+  min-height: 100dvh;
+}
+
+.namgim-previewInner {
+  width: 100%;
+  max-width: 480px;
+  margin-inline: auto;
+  padding: 32px 16px 48px;
+}
+
+.namgim-previewHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 20px;
+}
+
+.namgim-previewInner section {
+  border-top: 1px solid var(--namgim-secondary);
+  padding-block: 24px;
+}
+
+@media (min-width: 1280px) {
+  .namgim-previewInner {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 40px;
+    align-items: start;
+    max-width: 1200px;
+    padding-inline: 32px;
+  }
+
+  .namgim-previewHeader {
+    grid-column: 1 / -1;
+  }
+
+  .namgim-previewInner section {
+    min-width: 0;
+  }
+
+  /* Lay out button variants and form fields side by side in this preview. */
+  .namgim-previewInner section:is(:first-of-type, :last-of-type) {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+    gap: 16px;
+  }
+
+  .namgim-previewInner section:is(:first-of-type, :last-of-type) > * {
+    margin-block: 0;
+  }
+
+  .namgim-previewInner section:is(:first-of-type, :last-of-type) > h2,
+  .namgim-previewInner section:last-of-type > :last-child {
+    grid-column: 1 / -1;
+  }
+}
