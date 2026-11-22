@@ -33,6 +33,11 @@ export default function HomeView() {
     setState({ status: "loading" });
     try {
       const res = await fetch("/api/home", { cache: "no-store" });
+      if (res.status === 401) {
+        // 로그인이 풀렸으면 첫 화면으로 보내요.
+        router.replace("/");
+        return;
+      }
       const body: unknown = await res.json().catch(() => null);
       if (!res.ok || body === null) {
         setState({ status: "error", message: errorMessage(body) });
@@ -42,7 +47,7 @@ export default function HomeView() {
     } catch {
       setState({ status: "error", message: "인터넷 연결을 확인하고 다시 시도해 주세요." });
     }
-  }, []);
+  }, [router]);
 
   useEffect(() => {
     // 화면이 열리면 한 번 불러와요.
