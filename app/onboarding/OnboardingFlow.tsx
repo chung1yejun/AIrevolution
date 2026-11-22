@@ -41,6 +41,11 @@ export default function OnboardingFlow() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(answers),
       });
+      if (res.status === 401) {
+        // 로그인이 풀렸으면 첫 화면으로 보내요.
+        router.replace("/");
+        return;
+      }
       if (!res.ok) {
         setSaveError(errorMessage(await res.json().catch(() => null)));
         setSaving(false);

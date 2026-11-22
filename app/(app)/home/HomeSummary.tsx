@@ -17,7 +17,7 @@ export default function HomeSummary({ urgent, progress }: { urgent: UrgentTask |
             <span className="text-[30px] leading-none font-bold tabular-nums">{dDayLabel(urgent.dDay)}</span>
             <span className="text-[15px] font-semibold tabular-nums">{dateLabel(urgent.dueDate)}까지</span>
           </p>
-          <p className="mt-3 text-[13px]">별세일 기준 예상 기한이에요</p>
+          <p className="mt-3 text-[14px]">별세일 기준 예상 기한이에요</p>
         </Card>
       )}
 

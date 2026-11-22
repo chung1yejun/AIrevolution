@@ -47,12 +47,12 @@ export default function TaskList({ tasks }: { tasks: Task[] }) {
           {task.institutionId ? (
             <Link
               href={`/institutions/${task.institutionId}`}
-              className="block min-w-0 flex-1 rounded-xl py-2 pl-1 hover:bg-surface"
+              className="block min-w-0 flex-1 rounded-xl py-2 pl-1 wrap-anywhere hover:bg-surface"
             >
               <TaskBody task={task} />
             </Link>
           ) : (
-            <div className="min-w-0 flex-1 py-2 pl-1">
+            <div className="min-w-0 flex-1 py-2 pl-1 wrap-anywhere">
               <TaskBody task={task} />
             </div>
           )}
