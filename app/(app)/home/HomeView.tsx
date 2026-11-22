@@ -2,11 +2,10 @@
 
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
-import { Button } from "@/components/ui";
+import { Button, EmptyState, ErrorState, Loading } from "@/components/ui";
 import type { HomeResponse } from "@/lib/types";
 import HomeSummary from "./HomeSummary";
 import TaskList from "./TaskList";
-import { EmptyState, ErrorState, Loading } from "./temp-ui";
 
 const LOAD_ERROR = "할 일을 불러오지 못했어요. 잠시 후 다시 시도해 주세요.";
 

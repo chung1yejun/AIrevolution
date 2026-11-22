@@ -1,14 +1,10 @@
 import HomeView from "./HomeView";
-import { HomeTopBar } from "./temp-ui";
 
 export default function Page() {
   return (
-    <>
-      <HomeTopBar />
-      <main className="pt-6 pb-10">
-        <h1 className="sr-only">홈</h1>
-        <HomeView />
-      </main>
-    </>
+    <main className="pt-6 pb-10">
+      <h1 className="sr-only">홈</h1>
+      <HomeView />
+    </main>
   );
 }
