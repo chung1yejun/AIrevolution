@@ -1,43 +1,63 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useState } from "react";
-import AnswerSummary from "./AnswerSummary";
+import { Button, ProgressBar } from "@/components/ui";
 import QuestionField from "./QuestionField";
 import { QUESTIONS, isAnswered, type Answers } from "./questions";
 
 const TOTAL_STEPS = QUESTIONS.length;
+const SAVE_ERROR = "답을 저장하지 못했어요. 잠시 후 다시 시도해 주세요.";
+
+/** API 오류 응답({ error: { message } })에서 한국어 설명을 꺼내요. */
+function errorMessage(body: unknown): string {
+  if (typeof body === "object" && body !== null && "error" in body) {
+    const { error } = body;
+    if (typeof error === "object" && error !== null && "message" in error && typeof error.message === "string") {
+      return error.message;
+    }
+  }
+  return SAVE_ERROR;
+}
 
 export default function OnboardingFlow() {
+  const router = useRouter();
   const [step, setStep] = useState(1);
   const [answers, setAnswers] = useState<Answers>({});
-  const [done, setDone] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   const question = QUESTIONS[step - 1];
   const percent = (step / TOTAL_STEPS) * 100;
   const canNext = isAnswered(question, answers);
+  const isLast = step === TOTAL_STEPS;
 
-  if (done) {
-    return <AnswerSummary answers={answers} onBack={() => setDone(false)} />;
+  async function save() {
+    setSaving(true);
+    setSaveError(null);
+    try {
+      const res = await fetch("/api/answers", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(answers),
+      });
+      if (!res.ok) {
+        setSaveError(errorMessage(await res.json().catch(() => null)));
+        setSaving(false);
+        return;
+      }
+      // 이동하는 동안에는 버튼을 계속 로딩으로 둬요.
+      router.push("/home");
+    } catch {
+      setSaveError("인터넷 연결을 확인하고 다시 시도해 주세요.");
+      setSaving(false);
+    }
   }
 
   return (
     <div className="flex min-h-dvh flex-col py-6">
       <header>
-        <p className="text-[14px] font-bold tabular-nums text-text-sub">
-          {step}/{TOTAL_STEPS}
-        </p>
-        <div
-          role="progressbar"
-          aria-valuemin={1}
-          aria-valuemax={TOTAL_STEPS}
-          aria-valuenow={step}
-          className="mt-2 h-2 w-full overflow-hidden rounded-full bg-surface"
-        >
-          <div
-            className="h-full rounded-full bg-primary transition-[width]"
-            style={{ width: `${percent}%` }}
-          />
-        </div>
+        <ProgressBar value={percent} label={`${step}/${TOTAL_STEPS}`} />
       </header>
 
       <section className="flex-1 py-8">
@@ -47,33 +67,32 @@ export default function OnboardingFlow() {
             key={question.key}
             question={question}
             value={answers[question.key]}
-            onChange={(v) =>
-              setAnswers((prev) => ({ ...prev, [question.key]: v }))
-            }
+            onChange={(v) => setAnswers((prev) => ({ ...prev, [question.key]: v }))}
           />
         </div>
       </section>
 
-      <footer className="flex gap-3">
-        {step > 1 && (
-          <button
-            type="button"
-            onClick={() => setStep((s) => s - 1)}
-            className="min-h-14 flex-1 rounded-2xl border border-primary bg-transparent px-4 text-[16px] font-bold text-primary"
-          >
-            이전
-          </button>
+      <footer className="grid gap-3">
+        {saveError && (
+          <p role="alert" className="break-keep text-[14px] text-warn">
+            {saveError}
+          </p>
         )}
-        <button
-          type="button"
-          disabled={!canNext}
-          onClick={() =>
-            step < TOTAL_STEPS ? setStep((s) => s + 1) : setDone(true)
-          }
-          className="min-h-14 flex-1 rounded-2xl bg-primary px-4 text-[16px] font-bold text-on-primary disabled:cursor-not-allowed disabled:bg-text-sub"
-        >
-          {step < TOTAL_STEPS ? "다음" : "할 일 만들기"}
-        </button>
+        <div className="flex gap-3">
+          {step > 1 && (
+            <Button variant="secondary" className="flex-1" disabled={saving} onClick={() => setStep((s) => s - 1)}>
+              이전
+            </Button>
+          )}
+          <Button
+            className="flex-1 font-bold"
+            disabled={!canNext}
+            loading={saving}
+            onClick={() => (isLast ? save() : setStep((s) => s + 1))}
+          >
+            {!isLast ? "다음" : saveError ? "다시 시도" : "할 일 만들기"}
+          </Button>
+        </div>
       </footer>
     </div>
   );
