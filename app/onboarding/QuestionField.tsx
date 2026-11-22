@@ -1,5 +1,6 @@
 "use client";
 
+import { Input, Select } from "@/components/ui";
 import {
   oneYearAgoKst,
   todayKst,
@@ -42,12 +43,7 @@ export default function QuestionField({ question, value, onChange }: Props) {
 
   if (question.type === "select") {
     return (
-      <select
-        aria-label={question.title}
-        value={value ?? ""}
-        onChange={(e) => onChange(e.target.value)}
-        className="h-14 w-full rounded-2xl border-2 border-transparent bg-field px-4 text-[16px] text-on-primary focus:border-on-primary aria-invalid:border-warn-ink aria-invalid:bg-primary"
-      >
+      <Select label="거주 지역" value={value ?? ""} onChange={(e) => onChange(e.target.value)}>
         <option value="" disabled>
           지역을 골라 주세요
         </option>
@@ -56,30 +52,23 @@ export default function QuestionField({ question, value, onChange }: Props) {
             {o.label}
           </option>
         ))}
-      </select>
+      </Select>
     );
   }
 
   const error = value ? validateDeathDate(value) : null;
   return (
-    <div>
-      <input
+    <div className="grid gap-2">
+      <Input
         type="date"
-        aria-label={question.title}
-        aria-invalid={error !== null}
+        label="별세일"
+        error={error ?? undefined}
         value={value ?? ""}
         min={oneYearAgoKst()}
         max={todayKst()}
         onChange={(e) => onChange(e.target.value)}
-        className="h-14 w-full rounded-2xl border-2 border-transparent bg-field px-4 text-[16px] text-on-primary focus:border-on-primary aria-invalid:border-warn-ink aria-invalid:bg-primary"
       />
-      {error ? (
-        <p role="alert" className="mt-2 text-[14px] text-warn">
-          {error}
-        </p>
-      ) : (
-        <p className="mt-2 text-[14px] text-text-sub">{question.hint}</p>
-      )}
+      {!error && <p className="text-[14px] text-text-sub">{question.hint}</p>}
     </div>
   );
 }
