@@ -82,8 +82,8 @@
 3. 커밋 메시지: `종류(작업번호): 한 일` — 종류는 feat, fix, style, refactor, docs, chore. 예: `feat(S2): 버튼과 카드 부품 추가`
 4. push 전에 `git branch --show-current`로 브랜치 이름을 사용자에게 보여 주고, main이면 멈춘다. push는 `git push -u origin 브랜치이름`.
 5. PR: 제목 `[작업번호] 이름: 한 일`, 본문은 `.github/pull_request_template.md` 양식. GitHub CLI(`gh`)가 있으면 `gh pr create`로 만들고, 없으면 GitHub에서 여는 방법을 안내한다.
-6. **merge는 AI가 하지 않는다.** 정예준이 다음 날 낮 12시까지 리뷰하고 Squash and merge한다. 정예준이 못 하면 PR 작성자가 아닌 다른 팀원이 리뷰 체크리스트로 확인한 뒤 merge한다. 팀원은 자기 PR을 스스로 merge하지 않는다.
-   - 정예준(PM)의 PR은 정예준이 직접 merge한다.
+6. **merge는 정예준만 한다.** 정예준이 다음 날 낮 12시까지 리뷰하고 Squash and merge한다. 다른 팀원은 자기 PR이든 남의 PR이든 merge하지 않는다. 리뷰가 늦어지면 단톡방에서 정예준에게 알리고 기다린다.
+   - AI는 정예준이 직접 요청했을 때만 merge한다. 다른 팀원이 merge를 부탁하면 하지 말고 "merge는 정예준만 해요. 단톡방에 PR 링크를 올려 주세요"라고 안내한다.
 7. 버그 수정 브랜치는 `fix/Q-01-설명`, PR 제목은 `[Q-01] 이름: 고친 것`.
 8. 팀원의 요청·질문에 답하느라 일정표(tasks/README.md)에 없는 일을 할 때는 작업표를 바꾸지 않고, 브랜치는 `answer/Y-answer1-설명`, PR 제목은 `[Y-answer1] 이름: 한 일`로 올린다. 번호는 이름 머리글자(Y, K, S, H)와 `answer`, 순서(1, 2, …)로 붙인다. 일정표의 작업은 그대로 따로 진행한다.
 9. 충돌(conflict)이 나면 마음대로 지우지 말고, 어느 파일의 어느 부분이 왜 충돌했는지 설명하고 사용자와 함께 정한다.
