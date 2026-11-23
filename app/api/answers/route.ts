@@ -1,9 +1,11 @@
 import { QUESTIONS, todayKst } from "@/app/onboarding/questions";
 import { fail, ok } from "@/lib/api";
 import { requireUser } from "@/lib/auth-server";
-import { addMonths } from "@/lib/rules";
+import { addMonths, buildRuleTasks } from "@/lib/rules";
 import { createClient } from "@/lib/supabase/server";
 import type { Answers, AnswersResponse } from "@/lib/types";
+
+import { syncRuleTasks } from "./sync-rule-tasks";
 
 function isAnswers(body: unknown): body is Answers {
   if (!body || typeof body !== "object") return false;
@@ -55,5 +57,11 @@ export async function POST(request: Request) {
     return fail(500, "SERVER_ERROR", "답변을 저장하지 못했어요. 다시 시도해 주세요.");
   }
 
-  return ok<AnswersResponse>({ ok: true, taskCount: 0 });
+  const tasks = buildRuleTasks(body);
+  const taskError = await syncRuleTasks(supabase, user.id, tasks);
+  if (taskError) {
+    return fail(500, "SERVER_ERROR", "할 일을 갱신하지 못했어요. 다시 저장해 주세요.");
+  }
+
+  return ok<AnswersResponse>({ ok: true, taskCount: tasks.length });
 }
