@@ -5,7 +5,7 @@
 
 ## 0. 공통 규칙
 - 주소는 모두 `app/api/.../route.ts`. 요청·응답은 JSON.
-- **로그인**: `/api/partner/stats`를 뺀 모든 API는 로그인 필요. 로그인 안 했으면 `401 { "error": { "code": "UNAUTHORIZED", "message": "로그인이 필요해요." } }`.
+- **로그인**: `/api/partner/stats`와 베타 테스트 로그인 `/api/dev-login`(4장)을 뺀 모든 API는 로그인 필요. 로그인 안 했으면 `401 { "error": { "code": "UNAUTHORIZED", "message": "로그인이 필요해요." } }`.
 - **오류 형식**: `{ "error": { "code": "...", "message": "한국어 설명" } }`
   - 400 BAD_INPUT(입력이 잘못됨), 401 UNAUTHORIZED, 404 NOT_FOUND, 500 SERVER_ERROR
 - 날짜 `YYYY-MM-DD`, 시각 ISO 문자열. `dDay`는 한국 시간 오늘 기준 남은 일수(오늘이면 0, 지났으면 음수).
@@ -29,6 +29,7 @@
 | GET /api/agents | 샘플 행정사 목록 | 황겸 | H4 | H7 |
 | POST·GET /api/delegations | 행정사 신청 저장, 내 신청 내역 | 황겸 | H4 | H9 묶음5 |
 | GET /api/partner/stats | 파트너 대시보드 집계(로그인 불필요) | 황겸 | H4 | H10 묶음6 |
+| GET /api/dev-login | 베타 테스트 로그인(내 컴퓨터 개발 서버에서만, 12/7 삭제) | 정예준 | - | Y-answer2 |
 
 ## 2. 강주원 담당
 
@@ -91,7 +92,8 @@
 }
 ```
 - `source`: `ai`(Claude 결과) 또는 `fallback`(예비 결과, specs/mock-data.md 5장).
-- `reason`(fallback일 때): `timeout`(20초 초과) | `invalid`(형식 오류) | `limit`(하루 5회 초과) | `no_key`(키 없음, 로컬) | `error`. ai면 null.
+- `reason`(fallback일 때): `timeout`(20초 초과) | `invalid`(형식 오류) | `limit`(하루 5회 초과) | `no_key`(키 없음 또는 `AI_ENABLED`가 꺼짐) | `error`. ai면 null.
+- **돈이 드는 호출**: 이 API만 Claude(유료)를 부른다. 서버 환경 변수 `AI_ENABLED=true`일 때만 실제로 부르고, 11/30(1차 완성)까지는 꺼 둔다(CLAUDE.md 7장 10번). 꺼져 있으면 `no_key` 예비 결과.
 - 실패해도 항상 200과 예비 결과를 돌려준다(화면이 멈추지 않게). 빈 텍스트만 400.
 - `institutionId`: institutions의 name과 같으면 그 id, 없으면 null.
 - 저장: analyses에 items와 used_fallback만(원문 저장 금지). ai_usage 1 증가(limit일 때는 증가 안 함).
@@ -175,3 +177,12 @@
 }
 ```
 - daily는 최근 14일 모두(가입 0인 날도 0으로).
+
+## 4. 베타 테스트 전용 (정예준)
+
+### GET /api/dev-login?next=/home
+- AI 코딩 도구가 로그인 후 화면을 확인하려고 쓰는 테스트 로그인(CLAUDE.md 7장 9번).
+- 조건: `npm run dev` + `.env.local`의 `TEST_LOGIN_ENABLED=true` + localhost 주소 + 서버에 `SUPABASE_SERVICE_ROLE_KEY`. 하나라도 아니면 `404 NOT_FOUND`(운영·미리보기 주소는 항상 404).
+- 테스트 계정(`TEST_LOGIN_EMAIL`, 없으면 `beta-tester@namgim.test`)이 없으면 만들고, 비밀번호 없이 로그인 쿠키를 저장한 뒤 `next`(우리 사이트 안 주소만, 기본 `/home`)로 이동(302).
+- 서비스 키가 없거나 로그인에 실패하면 `500 SERVER_ERROR`(message에 이유).
+- 12/7 코드 동결 때 삭제.

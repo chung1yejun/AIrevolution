@@ -36,7 +36,7 @@
 | 위치 | 내용 | 담당 |
 |---|---|---|
 | `CLAUDE.md`, `AGENTS.md`, `specs/`, `tasks/`, `docs/` | 규칙서, 설계 문서, 작업 안내서 | 정예준 |
-| `app/page.tsx`, `app/about`, `app/onboarding`, `app/(app)/home`, `app/(app)/me`, `app/layout.tsx` | 첫 화면, 이용 안내, 질문, 홈, 내 정보, 전체 틀 | 정예준 |
+| `app/page.tsx`, `app/about`, `app/onboarding`, `app/(app)/home`, `app/(app)/me`, `app/layout.tsx`, `app/api/dev-login` | 첫 화면, 이용 안내, 질문, 홈, 내 정보, 전체 틀, 베타 테스트 로그인 | 정예준 |
 | `components/ui/`, `app/(app)/layout.tsx`, `lib/mask.ts` | 공통 부품, 하단 탭 틀, 주민번호 가리기 | 김수아 |
 | `app/(app)/analysis`, `app/(app)/documents`, `app/(app)/institutions` | AI 분석, 준비 서류, 기관 상세 화면 | 김수아 |
 | `lib/supabase/`, `lib/auth.ts`, `lib/rules.ts`, `lib/claude.ts`, `lib/api.ts`, `proxy.ts`(또는 `middleware.ts`), `app/auth/callback` | 로그인, 할 일 규칙, Claude 호출, API 공통 함수 | 강주원 |
@@ -65,7 +65,17 @@
 5. **모바일 우선**: 이용자 화면은 폭 375px 휴대폰 기준으로 먼저 만든다. 넓은 화면에서는 최대 480px 폭으로 가운데 정렬. `/partner`만 PC 우선.
 6. **상태 처리**: 데이터를 불러오는 화면은 로딩, 오류, 빈 상태를 모두 보여준다(`components/ui`의 Loading, ErrorState, EmptyState). 빈칸이나 아주 긴 입력에도 멈추지 않는다.
 7. **샘플 표시**: 샘플 조회 결과, 기관 양식, 행정사 목록이 나오는 곳에는 '샘플' 태그를 붙인다.
-8. **로그인 보호**: `/`, `/about`, `/partner`, `/auth/callback`, `/api/partner/stats`를 뺀 화면과 API는 로그인한 사람만 쓴다.
+8. **로그인 보호**: `/`, `/about`, `/partner`, `/auth/callback`, `/api/partner/stats`를 뺀 화면과 API는 로그인한 사람만 쓴다. 예외: 9번의 베타 테스트 로그인(`/api/dev-login`, 내 컴퓨터에서만).
+9. **베타 테스트 로그인 (AI가 로그인 후 화면을 직접 확인)**: 구글 로그인은 AI가 할 수 없으므로, 로그인 후 화면은 테스트 계정으로 확인한다.
+   - 사용법: `npm run dev` → `http://localhost:3000/api/dev-login?next=/home` 을 열면 테스트 계정(`beta-tester@namgim.test`)으로 로그인되고 `next` 주소로 간다. 로그아웃은 평소처럼.
+   - 동작 조건(셋 다): `npm run dev`(개발 서버) + `.env.local`에 `TEST_LOGIN_ENABLED=true` + 주소가 localhost. 운영·미리보기(Vercel) 주소에서는 항상 404.
+   - `.env.local`에 `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`가 있어야 한다. 서비스 키는 정예준·강주원만 가지므로 **두 사람 컴퓨터에서만** 쓸 수 있다. 다른 팀원은 구글 로그인으로 확인한다.
+   - 테스트 계정은 진짜 DB에 저장되므로 샘플 값만 넣는다(2번 개인정보 규칙 그대로). 비밀번호는 없고, 이 기능을 다른 주소에 공개하거나 Vercel에 `TEST_LOGIN_ENABLED`를 넣지 않는다.
+   - 베타 기간에만 쓴다. **12/7 코드 동결 때 정예준이 `app/api/dev-login`과 이 규칙을 지운다.**
+10. **돈이 드는 API는 1차 완성 후에만 실제로 부른다**: 돈이 드는 외부 API는 **Claude API 하나**이고, **AI 분석(기능 4: `/analysis` → `POST /api/analysis` → `lib/claude.ts`)에서만** 쓴다. Supabase·Vercel은 무료 요금제 안에서 쓴다.
+   - 스위치: 서버 환경 변수 `AI_ENABLED`가 `true`일 때만 `lib/claude.ts`가 Claude를 부른다. 아니면 키가 없을 때처럼 `NoKeyError`를 내고, 화면은 예비 결과(`reason: no_key`)로 끝까지 동작한다.
+   - **11/30(1차 완성)까지는 어디에서도 `AI_ENABLED`를 켜지 않는다**(내 컴퓨터, Vercel 모두). 화면·API는 예비 결과로 만들고 확인한다. AI 코딩 도구도 실제 Claude를 부르는 스크립트·테스트를 실행하지 않는다.
+   - **12/1(보완1)에 정예준이 Vercel에 `AI_ENABLED=true`를 넣고**, 실제 호출 테스트는 K13 Step 2에서 한 번에 몰아서 한다(샘플 3개 × 3번 정도). 그 밖의 실제 호출은 하루 5회 제한 안에서 꼭 필요할 때만.
 
 ## 8. 코드 규칙
 - TypeScript, `any` 금지. 서버 컴포넌트가 기본이고 클릭·입력이 필요한 컴포넌트만 `'use client'`.
