@@ -100,3 +100,53 @@ export type AnalysisApplyRequest =
 export type AnalysisApplyResponse = { added: number; skipped: number };
 
 export type DeleteMeResponse = { ok: true };
+
+export type DocumentsResponse = {
+  documents: {
+    id: string;
+    name: string;
+    issuer: string;
+    copies: number;
+    usedBy: string[];
+    checked: boolean;
+  }[];
+};
+
+export type DocumentUpdateResponse = { id: string; checked: boolean };
+
+export type InstitutionSummary = {
+  id: string;
+  name: string;
+  type: InstitutionType;
+  isSample: boolean;
+};
+
+export type InstitutionsResponse = { institutions: InstitutionSummary[] };
+
+export type InstitutionDetailResponse = InstitutionSummary & {
+  howToApply: string;
+  needsExpert: boolean;
+  formKey: "bank" | "insurance" | "telecom" | null;
+  tasks: Pick<Task, "id" | "title" | "dueDate" | "done">[];
+  documents: { name: string; issuer: string; copies: number }[];
+};
+
+export type AgentsResponse = {
+  agents: { id: string; name: string; region: string; cases: number; fee: string; isSample: boolean }[];
+};
+
+export type DelegationResponse = { id: string; status: "신청됨"; createdAt: string };
+export type DelegationsResponse = {
+  delegations: (DelegationResponse & { agentName: string; tasks: string[] })[];
+};
+
+export type PartnerStatsResponse = {
+  partner: string;
+  month: string;
+  families: number;
+  billing: number;
+  avgProgress: number;
+  completed: number;
+  daily: { date: string; count: number }[];
+  stages: { stage: string; count: number }[];
+};
