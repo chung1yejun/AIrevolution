@@ -5,8 +5,6 @@ import { addMonths, buildRuleTasks } from "@/lib/rules";
 import { createClient } from "@/lib/supabase/server";
 import type { Answers, AnswersResponse } from "@/lib/types";
 
-import { syncRuleTasks } from "./sync-rule-tasks";
-
 function isAnswers(body: unknown): body is Answers {
   if (!body || typeof body !== "object") return false;
 
@@ -32,7 +30,7 @@ function isAnswers(body: unknown): body is Answers {
 }
 
 export async function POST(request: Request) {
-  const { user, response } = await requireUser();
+  const { response } = await requireUser();
   if (response) return response;
 
   const body: unknown = await request.json().catch(() => undefined);
@@ -41,27 +39,19 @@ export async function POST(request: Request) {
   }
 
   const supabase = await createClient();
-  const { error } = await supabase.from("answers").upsert(
-    {
-      user_id: user.id,
+  const { data, error } = await supabase.rpc("save_onboarding_answers", {
+    p_answers: {
       relation: body.relation,
-      death_date: body.deathDate,
+      deathDate: body.deathDate,
       region: body.region,
-      heir_count: body.heirCount,
+      heirCount: body.heirCount,
       will: body.will,
-      updated_at: new Date().toISOString(),
     },
-    { onConflict: "user_id" },
-  );
-  if (error) {
-    return fail(500, "SERVER_ERROR", "답변을 저장하지 못했어요. 다시 시도해 주세요.");
+    p_rule_tasks: buildRuleTasks(body),
+  });
+  if (error || data?.ok !== true || typeof data.taskCount !== "number") {
+    return fail(500, "SERVER_ERROR", "답변과 할 일을 저장하지 못했어요. 다시 시도해 주세요.");
   }
 
-  const tasks = buildRuleTasks(body);
-  const taskError = await syncRuleTasks(supabase, user.id, tasks);
-  if (taskError) {
-    return fail(500, "SERVER_ERROR", "할 일을 갱신하지 못했어요. 다시 저장해 주세요.");
-  }
-
-  return ok<AnswersResponse>({ ok: true, taskCount: tasks.length });
+  return ok<AnswersResponse>({ ok: true, taskCount: data.taskCount });
 }
