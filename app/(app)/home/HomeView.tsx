@@ -29,8 +29,12 @@ function errorMessage(body: unknown): string {
 export default function HomeView() {
   const router = useRouter();
   const [state, setState] = useState<State>({ status: "loading" });
+  const [savingIds, setSavingIds] = useState<string[]>([]);
+  const [saveError, setSaveError] = useState("");
 
   const load = useCallback(async () => {
+    // 다른 화면에 다녀와도 화면 상태가 남아 있어서, 새로 불러올 때 지난 저장 오류를 지워요.
+    setSaveError("");
     setState({ status: "loading" });
     try {
       const res = await fetch("/api/home", { cache: "no-store" });
@@ -49,9 +53,6 @@ export default function HomeView() {
       setState({ status: "error", message: "인터넷 연결을 확인하고 다시 시도해 주세요." });
     }
   }, [router]);
-
-  const [savingIds, setSavingIds] = useState<string[]>([]);
-  const [saveError, setSaveError] = useState("");
 
   /** 할 일 목록을 바꾸고, 진행률을 따로 받지 않았으면 목록으로 다시 계산해요. */
   const updateTasks = useCallback((id: string, done: boolean, progress?: Progress) => {
