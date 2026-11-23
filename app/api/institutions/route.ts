@@ -1,20 +1,29 @@
-// 껍데기(H4): 실제 버전은 H7에서 구현합니다.
-import { ok } from "@/lib/api";
+import { fail, ok } from "@/lib/api";
 import { requireUser } from "@/lib/auth-server";
-import type { InstitutionsResponse } from "@/lib/types";
+import { createClient } from "@/lib/supabase/server";
+import type { InstitutionsResponse, InstitutionType } from "@/lib/types";
+
+type InstitutionRow = { id: string; name: string; type: InstitutionType | null; is_sample: boolean | null };
 
 export async function GET() {
   const { response } = await requireUser();
   if (response) return response;
 
-  return ok<InstitutionsResponse>({
-    institutions: [
-      { id: "i-haneul", name: "하늘은행", type: "bank", isSample: true },
-      { id: "i-dundun", name: "든든생명", type: "insurance", isSample: true },
-      { id: "i-baro", name: "바로텔레콤", type: "telecom", isSample: true },
-      { id: "i-hanbit", name: "한빛은행", type: "bank", isSample: true },
-      { id: "i-purun", name: "푸른화재", type: "insurance", isSample: true },
-      { id: "i-nuri", name: "누리모바일", type: "telecom", isSample: true },
-    ],
-  });
+  const db = await createClient();
+  const { data, error } = await db
+    .from("institutions")
+    .select("id, name, type, is_sample")
+    .eq("selectable", true)
+    .order("type")
+    .order("name")
+    .overrideTypes<InstitutionRow[], { merge: false }>();
+
+  if (error) return fail(500, "SERVER_ERROR", "기관 목록을 불러오지 못했어요.");
+
+  const institutions: InstitutionsResponse["institutions"] = [];
+  for (const { id, name, type, is_sample } of data) {
+    if (!type) return fail(500, "SERVER_ERROR", "기관 종류를 불러오지 못했어요.");
+    institutions.push({ id, name, type, isSample: is_sample ?? true });
+  }
+  return ok<InstitutionsResponse>({ institutions });
 }
