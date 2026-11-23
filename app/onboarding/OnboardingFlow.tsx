@@ -46,9 +46,16 @@ export default function OnboardingFlow({ edit = false }: { edit?: boolean }) {
   }, [router]);
 
   useEffect(() => {
-    if (!edit) return;
-    // 화면이 열리면 한 번 불러와요.
+    // 다른 화면에 다녀와도 화면 상태가 남아 있어서, 화면이 보일 때마다 1번 질문부터 다시 시작해요.
     // eslint-disable-next-line react-hooks/set-state-in-effect
+    setStep(1);
+    setSaving(false);
+    setSaveError(null);
+    if (!edit) {
+      setAnswers({});
+      return;
+    }
+    // 답변 수정이면 기존 답을 불러와요.
     void loadPrefill();
   }, [edit, loadPrefill]);
 
