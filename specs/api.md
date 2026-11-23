@@ -92,8 +92,8 @@
 }
 ```
 - `source`: `ai`(Claude 결과) 또는 `fallback`(예비 결과, specs/mock-data.md 5장).
-- `reason`(fallback일 때): `timeout`(20초 초과) | `invalid`(형식 오류) | `limit`(하루 5회 초과) | `no_key`(키 없음 또는 `AI_ENABLED`가 꺼짐) | `error`. ai면 null.
-- **돈이 드는 호출**: 이 API만 Claude(유료)를 부른다. 서버 환경 변수 `AI_ENABLED=true`일 때만 실제로 부르고, 11/30(1차 완성)까지는 꺼 둔다(CLAUDE.md 7장 10번). 꺼져 있으면 `no_key` 예비 결과.
+- `reason`(fallback일 때): `timeout`(20초 초과) | `invalid`(형식 오류) | `limit`(하루 5회 초과) | `no_key`(키 없음, 로컬) | `error`. ai면 null.
+- **돈이 드는 호출**: 이 API만 Claude(유료)를 부른다. AI 코딩 도구는 이 API나 `lib/claude.ts`로 실제 Claude를 부르는 테스트를 하기 전에 사용자에게 먼저 묻는다(CLAUDE.md 7장 10번).
 - 실패해도 항상 200과 예비 결과를 돌려준다(화면이 멈추지 않게). 빈 텍스트만 400.
 - `institutionId`: institutions의 name과 같으면 그 id, 없으면 null.
 - 저장: analyses에 items와 used_fallback만(원문 저장 금지). ai_usage 1 증가(limit일 때는 증가 안 함).

@@ -70,10 +70,9 @@
    - `.env.local`에 `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`가 있어야 한다. 서비스 키는 정예준·강주원만 가지므로 **두 사람 컴퓨터에서만** 쓸 수 있다. 다른 팀원은 구글 로그인으로 확인한다.
    - 테스트 계정은 진짜 DB에 저장되므로 샘플 값만 넣는다(2번 개인정보 규칙 그대로). 비밀번호는 없고, 이 기능을 다른 주소에 공개하거나 Vercel에 `TEST_LOGIN_ENABLED`를 넣지 않는다.
    - 베타 기간에만 쓴다. **12/7 코드 동결 때 정예준이 `app/api/dev-login`과 이 규칙을 지운다.**
-10. **돈이 드는 API는 1차 완성 후에만 실제로 부른다**: 돈이 드는 외부 API는 **Claude API 하나**이고, **AI 분석(기능 4: `/analysis` → `POST /api/analysis` → `lib/claude.ts`)에서만** 쓴다. Supabase·Vercel은 무료 요금제 안에서 쓴다.
-   - 스위치: 서버 환경 변수 `AI_ENABLED`가 `true`일 때만 `lib/claude.ts`가 Claude를 부른다. 아니면 키가 없을 때처럼 `NoKeyError`를 내고, 화면은 예비 결과(`reason: no_key`)로 끝까지 동작한다.
-   - **11/30(1차 완성)까지는 어디에서도 `AI_ENABLED`를 켜지 않는다**(내 컴퓨터, Vercel 모두). 화면·API는 예비 결과로 만들고 확인한다. AI 코딩 도구도 실제 Claude를 부르는 스크립트·테스트를 실행하지 않는다.
-   - **12/1(보완1)에 정예준이 Vercel에 `AI_ENABLED=true`를 넣고**, 실제 호출 테스트는 K13 Step 2에서 한 번에 몰아서 한다(샘플 3개 × 3번 정도). 그 밖의 실제 호출은 하루 5회 제한 안에서 꼭 필요할 때만.
+10. **돈이 드는 테스트는 먼저 묻는다**: 돈이 드는 외부 API는 **Claude API 하나**이고, **AI 분석(기능 4: `/analysis` → `POST /api/analysis` → `lib/claude.ts`)에서만** 쓴다. Supabase·Vercel은 무료 요금제 안에서 쓴다.
+   - AI 코딩 도구는 실제 Claude를 부르는 일(스크립트 실행, `POST /api/analysis` 호출, AI 분석 화면에서 분석 버튼 누르기 등)을 하기 전에 **멈추고 사용자에게 먼저 묻는다**: 무엇을 확인하려는지, 몇 번 부를지. 사용자가 "해"라고 답한 범위만 실행한다.
+   - 허락 없이 할 수 있는 것: 키가 없는 상태(`no_key` 예비 결과), 가짜 응답 문자열로 하는 형식 검사, Table Editor로 횟수를 바꾼 `limit` 확인처럼 Claude를 부르지 않는 확인.
 
 ## 8. 코드 규칙
 - TypeScript, `any` 금지. 서버 컴포넌트가 기본이고 클릭·입력이 필요한 컴포넌트만 `'use client'`.
