@@ -3,9 +3,10 @@
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { Button, EmptyState, ErrorState, Loading } from "@/components/ui";
-import type { HomeResponse } from "@/lib/types";
+import type { HomeResponse, Progress, TaskUpdateResponse } from "@/lib/types";
 import HomeSummary from "./HomeSummary";
 import TaskList from "./TaskList";
+import { countProgress, findUrgent, setDone, sortTasks } from "./tasks";
 
 const LOAD_ERROR = "할 일을 불러오지 못했어요. 잠시 후 다시 시도해 주세요.";
 
@@ -49,6 +50,51 @@ export default function HomeView() {
     }
   }, [router]);
 
+  const [savingIds, setSavingIds] = useState<string[]>([]);
+  const [saveError, setSaveError] = useState("");
+
+  /** 할 일 목록을 바꾸고, 진행률을 따로 받지 않았으면 목록으로 다시 계산해요. */
+  const updateTasks = useCallback((id: string, done: boolean, progress?: Progress) => {
+    setState((prev) => {
+      if (prev.status !== "ready" || !prev.data.hasAnswers) return prev;
+      const tasks = setDone(prev.data.tasks, id, done);
+      return {
+        status: "ready",
+        data: { ...prev.data, tasks, urgent: findUrgent(tasks), progress: progress ?? countProgress(tasks) },
+      };
+    });
+  }, []);
+
+  /** 체크하면 화면을 먼저 바꾸고 저장해요. 저장에 실패하면 원래대로 되돌려요. */
+  const toggleTask = useCallback(
+    async (id: string, done: boolean) => {
+      setSaveError("");
+      setSavingIds((ids) => [...ids, id]);
+      updateTasks(id, done);
+      try {
+        const res = await fetch(`/api/tasks/${encodeURIComponent(id)}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ done }),
+        });
+        if (res.status === 401) {
+          router.replace("/");
+          return;
+        }
+        const body: unknown = await res.json().catch(() => null);
+        if (!res.ok || body === null) throw new Error("save failed");
+        const saved = body as TaskUpdateResponse;
+        updateTasks(saved.id, saved.done, saved.progress);
+      } catch {
+        updateTasks(id, !done);
+        setSaveError("저장하지 못했어요. 잠시 후 다시 시도해 주세요.");
+      } finally {
+        setSavingIds((ids) => ids.filter((savingId) => savingId !== id));
+      }
+    },
+    [router, updateTasks],
+  );
+
   useEffect(() => {
     // 화면이 열리면 한 번 불러와요.
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -77,8 +123,13 @@ export default function HomeView() {
         <h2 id="task-title" className="mb-3 text-[18px] font-bold">
           할 일
         </h2>
+        {saveError && (
+          <p role="alert" className="mb-3 rounded-xl bg-surface px-4 py-3 text-[15px] font-semibold text-warn">
+            {saveError}
+          </p>
+        )}
         {data.tasks.length > 0 ? (
-          <TaskList tasks={data.tasks} />
+          <TaskList tasks={sortTasks(data.tasks)} savingIds={savingIds} onToggle={toggleTask} />
         ) : (
           <EmptyState
             message="아직 할 일이 없어요. AI로 놓친 기관을 찾아볼 수 있어요"
@@ -90,7 +141,7 @@ export default function HomeView() {
 
       <div className="grid gap-3">
         <Button onClick={() => router.push("/analysis")}>AI로 놓친 기관 찾기</Button>
-        <Button variant="secondary" onClick={() => router.push("/onboarding")}>
+        <Button variant="secondary" onClick={() => router.push("/onboarding?edit=1")}>
           답변 수정
         </Button>
       </div>
