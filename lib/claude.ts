@@ -72,20 +72,20 @@ function parseInstitutions(text: string): AnalysisItem[] {
   });
 }
 
-export async function extractInstitutions(maskedText: string): Promise<AnalysisItem[]> {
+export async function extractInstitutions(maskedText: string, signal?: AbortSignal): Promise<AnalysisItem[]> {
   const apiKey = process.env.ANTHROPIC_API_KEY?.trim();
   if (!apiKey) throw new NoKeyError();
 
   const model = process.env.ANTHROPIC_MODEL?.trim();
   if (!model) throw new Error("Claude 모델이 설정되지 않았어요.");
 
-  const client = new Anthropic({ apiKey });
+  const client = new Anthropic({ apiKey, maxRetries: 0 });
   const response = await client.messages.create({
     model,
     max_tokens: 2048,
     system: extractionPrompt,
     messages: [{ role: "user", content: maskedText }],
-  });
+  }, { signal });
 
   const text = response.content
     .flatMap((block) => block.type === "text" ? [block.text] : [])
