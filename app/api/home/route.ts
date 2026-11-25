@@ -4,6 +4,8 @@ import { dDay } from "@/lib/rules";
 import { createClient } from "@/lib/supabase/server";
 import type { Answers, HomeResponse, Task } from "@/lib/types";
 
+import { getTaskProgress } from "../tasks/progress";
+
 type AnswerRow = Pick<Answers, "relation" | "region" | "will"> & {
   death_date: string;
   heir_count: Answers["heirCount"];
@@ -35,7 +37,7 @@ export async function GET() {
       hasAnswers: false,
       answers: null,
       urgent: null,
-      progress: { done: 0, total: 0, percent: 0 },
+      progress: getTaskProgress([]),
       tasks: [],
     });
   }
@@ -75,9 +77,6 @@ export async function GET() {
       }
     : null;
 
-  const total = tasks.length;
-  const done = tasks.filter((task) => task.done).length;
-
   return ok<HomeResponse>({
     hasAnswers: true,
     answers: {
@@ -88,7 +87,7 @@ export async function GET() {
       will: answer.will,
     },
     urgent,
-    progress: { done, total, percent: total === 0 ? 0 : Math.round(done / total * 100) },
+    progress: getTaskProgress(tasks),
     tasks,
   });
 }
