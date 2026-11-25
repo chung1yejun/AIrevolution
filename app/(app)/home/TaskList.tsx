@@ -33,16 +33,27 @@ function TaskBody({ task }: { task: Task }) {
   );
 }
 
-/** 할 일 목록. 체크박스는 Y9에서 PATCH /api/tasks/[id]와 연결해요(지금은 표시만). */
-export default function TaskList({ tasks }: { tasks: Task[] }) {
+type TaskListProps = {
+  tasks: Task[];
+  /** 저장 중인 할 일 id (저장이 끝날 때까지 다시 누를 수 없어요) */
+  savingIds: string[];
+  onToggle: (id: string, done: boolean) => void;
+};
+
+/** 할 일 목록. 체크하면 onToggle로 저장하고, 끝낸 할 일은 흐리게 보여요. */
+export default function TaskList({ tasks, savingIds, onToggle }: TaskListProps) {
   return (
     <ul className="border-t border-border">
       {tasks.map((task) => (
-        <li key={task.id} className="flex items-start gap-1 border-b border-border py-3">
+        <li
+          key={task.id}
+          className={`flex items-start gap-1 border-b border-border py-3 transition-opacity ${task.done ? "opacity-50" : ""}`}
+        >
           <Checkbox
             label={<span className="sr-only">{task.title} 완료</span>}
             checked={task.done}
-            readOnly
+            disabled={savingIds.includes(task.id)}
+            onChange={(event) => onToggle(task.id, event.target.checked)}
           />
           {task.institutionId ? (
             <Link

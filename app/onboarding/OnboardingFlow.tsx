@@ -1,10 +1,11 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { Button, ProgressBar } from "@/components/ui";
+import { useCallback, useEffect, useState } from "react";
+import { Button, ErrorState, Loading, ProgressBar } from "@/components/ui";
 import QuestionField from "./QuestionField";
 import { QUESTIONS, isAnswered, type Answers } from "./questions";
+import { loadSavedAnswers } from "./savedAnswers";
 
 const TOTAL_STEPS = QUESTIONS.length;
 const SAVE_ERROR = "답을 저장하지 못했어요. 잠시 후 다시 시도해 주세요.";
@@ -20,12 +21,43 @@ function errorMessage(body: unknown): string {
   return SAVE_ERROR;
 }
 
-export default function OnboardingFlow() {
+export default function OnboardingFlow({ edit = false }: { edit?: boolean }) {
   const router = useRouter();
   const [step, setStep] = useState(1);
   const [answers, setAnswers] = useState<Answers>({});
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
+  // 답변 수정이면 기존 답을 불러오는 동안 기다려요.
+  const [prefill, setPrefill] = useState<"loading" | "error" | "ready">(edit ? "loading" : "ready");
+
+  const loadPrefill = useCallback(async () => {
+    setPrefill("loading");
+    const result = await loadSavedAnswers();
+    if (result.status === "logged-out") {
+      router.replace("/");
+      return;
+    }
+    if (result.status === "error") {
+      setPrefill("error");
+      return;
+    }
+    setAnswers(result.answers);
+    setPrefill("ready");
+  }, [router]);
+
+  useEffect(() => {
+    // 다른 화면에 다녀와도 화면 상태가 남아 있어서, 화면이 보일 때마다 1번 질문부터 다시 시작해요.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setStep(1);
+    setSaving(false);
+    setSaveError(null);
+    if (!edit) {
+      setAnswers({});
+      return;
+    }
+    // 답변 수정이면 기존 답을 불러와요.
+    void loadPrefill();
+  }, [edit, loadPrefill]);
 
   const question = QUESTIONS[step - 1];
   const percent = (step / TOTAL_STEPS) * 100;
@@ -57,6 +89,18 @@ export default function OnboardingFlow() {
       setSaveError("인터넷 연결을 확인하고 다시 시도해 주세요.");
       setSaving(false);
     }
+  }
+
+  if (prefill !== "ready") {
+    return (
+      <div className="py-6">
+        {prefill === "loading" ? (
+          <Loading />
+        ) : (
+          <ErrorState message="기존 답을 불러오지 못했어요. 잠시 후 다시 시도해 주세요." onRetry={loadPrefill} />
+        )}
+      </div>
+    );
   }
 
   return (
