@@ -1,20 +1,49 @@
-// 껍데기(K4): 실제 버전은 K7에서 구현합니다.
 import { fail, ok } from "@/lib/api";
+import { requireUser } from "@/lib/auth-server";
+import { createClient } from "@/lib/supabase/server";
 import type { TaskUpdateResponse } from "@/lib/types";
 
+import { getTaskProgress } from "../progress";
+
+const uuid = /^[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i;
+
 export async function PATCH(request: Request, context: RouteContext<"/api/tasks/[id]">) {
+  const { user, response } = await requireUser();
+  if (response) return response;
+
   const body: unknown = await request.json().catch(() => undefined);
   if (!body || typeof body !== "object" || !("done" in body) || typeof body.done !== "boolean") {
     return fail(400, "BAD_INPUT", "완료 여부를 보내 주세요.");
   }
 
   const { id } = await context.params;
-  const { done } = body;
+  if (!uuid.test(id)) return fail(404, "NOT_FOUND", "할 일을 찾지 못했어요.");
+
+  const supabase = await createClient();
+  const { data: task, error: updateError } = await supabase
+    .from("user_tasks")
+    .update({ done: body.done, done_at: body.done ? new Date().toISOString() : null })
+    .eq("id", id)
+    .eq("user_id", user.id)
+    .select("id, done, done_at")
+    .maybeSingle();
+
+  if (updateError) return fail(500, "SERVER_ERROR", "완료 여부를 저장하지 못했어요.");
+  if (!task) return fail(404, "NOT_FOUND", "할 일을 찾지 못했어요.");
+
+  const { data: tasks, error: progressError } = await supabase
+    .from("user_tasks")
+    .select("done")
+    .eq("user_id", user.id);
+
+  if (progressError) {
+    return fail(500, "SERVER_ERROR", "완료 여부는 저장했지만 진행률을 불러오지 못했어요.");
+  }
 
   return ok<TaskUpdateResponse>({
-    id,
-    done,
-    doneAt: done ? "2026-11-21T10:00:00+09:00" : null,
-    progress: { done: done ? 2 : 1, total: 5, percent: done ? 40 : 20 },
+    id: task.id,
+    done: task.done,
+    doneAt: task.done_at,
+    progress: getTaskProgress(tasks),
   });
 }
