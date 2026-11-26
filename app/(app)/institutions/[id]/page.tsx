@@ -1,8 +1,16 @@
-export default function Page() {
+import { Suspense } from "react";
+import { Loading } from "@/components/ui";
+import { InstitutionScreen } from "./InstitutionScreen";
+
+async function InstitutionRoute({ params }: PageProps<"/institutions/[id]">) {
+  const { id } = await params;
+  return <InstitutionScreen key={id} id={id} />;
+}
+
+export default function Page(props: PageProps<"/institutions/[id]">) {
   return (
-    <main className="py-8">
-      <h1 className="text-[22px] font-bold">기관 상세</h1>
-      <p className="mt-2 text-sm text-text-sub">준비 중 · 담당: 김수아 · S7</p>
-    </main>
+    <Suspense fallback={<main className="py-6"><Loading /></main>}>
+      <InstitutionRoute {...props} />
+    </Suspense>
   );
 }
