@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { connection } from "next/server";
 import { Chrysanthemum } from "@/components/ui";
 import { getUser } from "@/lib/auth-server";
 import { createClient } from "@/lib/supabase/server";
@@ -18,6 +19,8 @@ export const instant = false;
 
 /** 로그인한 사람이면 갈 곳(답이 있으면 /home, 없으면 /onboarding), 아니면 null */
 async function getNextPath(): Promise<"/home" | "/onboarding" | null> {
+  // 로그인 정보는 요청마다 달라서, 미리 그려 두지 않고 요청 때 읽어요.
+  await connection();
   try {
     const user = await getUser();
     if (!user) return null;
@@ -76,6 +79,10 @@ export default async function Page({ searchParams }: PageProps<"/">) {
         <nav className="lp-links">
           <Link href="/about" className="lp-link">
             이용 안내
+          </Link>
+          <span aria-hidden className="lp-link-sep">·</span>
+          <Link href="/partner" className="lp-link">
+            파트너용 화면
           </Link>
         </nav>
       </div>
