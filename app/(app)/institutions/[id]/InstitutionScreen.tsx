@@ -72,7 +72,7 @@ export function InstitutionScreen({ id }: { id: string }) {
           </div>
           <div className="grid items-start gap-5">
             <div className="space-y-4">
-              <Card className="space-y-3">
+              <Card className="space-y-3 min-[1280px]:px-9">
                 <h2 className="text-lg font-bold">해야 할 일</h2>
                 {institution.tasks.length === 0 ? <p className="text-sm">이 기관에 등록된 할 일이 없어요.</p> : (
                   <>
@@ -93,7 +93,7 @@ export function InstitutionScreen({ id }: { id: string }) {
                   </>
                 )}
               </Card>
-              <Card className="space-y-3">
+              <Card className="space-y-3 min-[1280px]:px-9">
                 <h2 className="text-lg font-bold">필요 서류</h2>
                 {institution.documents.length === 0 ? <p className="text-sm">안내할 서류가 아직 없어요.</p> : (
                   <ul className="divide-y divide-[var(--namgim-muted)]">
@@ -111,13 +111,19 @@ export function InstitutionScreen({ id }: { id: string }) {
                   </ul>
                 )}
               </Card>
-              <Card className="space-y-2">
+              <Card className="space-y-2 min-[1280px]:px-9">
                 <h2 className="text-lg font-bold">신청 방법</h2>
                 <p className="whitespace-pre-line break-keep">{institution.howToApply || "등록된 신청 방법이 없어요."}</p>
                 {!institution.formKey && <p className="text-sm font-semibold">이 기관은 방문 신청이에요.</p>}
               </Card>
             </div>
-            {institution.formKey && <RequestForm formKey={institution.formKey} />}
+            {institution.formKey && (
+              <RequestForm
+                formKey={institution.formKey}
+                institutionName={institution.name}
+                documents={institution.documents}
+              />
+            )}
           </div>
         </>
       )}
