@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { Button, ErrorState, Loading, ProgressBar } from "@/components/ui";
+import { clearDraft, loadDraft, saveDraft } from "./draft";
 import QuestionField from "./QuestionField";
 import { QUESTIONS, isAnswered, type Answers } from "./questions";
 import { loadSavedAnswers } from "./savedAnswers";
@@ -46,11 +47,19 @@ export default function OnboardingFlow({ edit = false }: { edit?: boolean }) {
   }, [router]);
 
   useEffect(() => {
-    // 다른 화면에 다녀와도 화면 상태가 남아 있어서, 화면이 보일 때마다 1번 질문부터 다시 시작해요.
+    // 다른 화면에 다녀와도 화면 상태가 남아 있어서, 화면이 보일 때마다 처음 상태를 다시 정해요.
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    setStep(1);
     setSaving(false);
     setSaveError(null);
+    // 뒤로가기·새로고침 전에 답하던 내용이 있으면 그 질문부터 이어서 해요.
+    const draft = loadDraft(edit);
+    if (draft) {
+      setStep(draft.step);
+      setAnswers(draft.answers);
+      setPrefill("ready");
+      return;
+    }
+    setStep(1);
     if (!edit) {
       setAnswers({});
       return;
@@ -58,6 +67,13 @@ export default function OnboardingFlow({ edit = false }: { edit?: boolean }) {
     // 답변 수정이면 기존 답을 불러와요.
     void loadPrefill();
   }, [edit, loadPrefill]);
+
+  /** 답을 고르거나 단계를 옮길 때마다 이 탭에 중간 답을 저장해요. */
+  function update(nextStep: number, nextAnswers: Answers) {
+    setStep(nextStep);
+    setAnswers(nextAnswers);
+    saveDraft({ edit, step: nextStep, answers: nextAnswers });
+  }
 
   const question = QUESTIONS[step - 1];
   const percent = (step / TOTAL_STEPS) * 100;
@@ -83,7 +99,8 @@ export default function OnboardingFlow({ edit = false }: { edit?: boolean }) {
         setSaving(false);
         return;
       }
-      // 이동하는 동안에는 버튼을 계속 로딩으로 둬요.
+      // 저장했으니 중간 답은 지워요. 이동하는 동안에는 버튼을 계속 로딩으로 둬요.
+      clearDraft();
       router.push("/home");
     } catch {
       setSaveError("인터넷 연결을 확인하고 다시 시도해 주세요.");
@@ -116,7 +133,7 @@ export default function OnboardingFlow({ edit = false }: { edit?: boolean }) {
             key={question.key}
             question={question}
             value={answers[question.key]}
-            onChange={(v) => setAnswers((prev) => ({ ...prev, [question.key]: v }))}
+            onChange={(v) => update(step, { ...answers, [question.key]: v })}
           />
         </div>
       </section>
@@ -129,7 +146,7 @@ export default function OnboardingFlow({ edit = false }: { edit?: boolean }) {
         )}
         <div className="flex gap-3">
           {step > 1 && (
-            <Button variant="secondary" className="flex-1" disabled={saving} onClick={() => setStep((s) => s - 1)}>
+            <Button variant="secondary" className="flex-1" disabled={saving} onClick={() => update(step - 1, answers)}>
               이전
             </Button>
           )}
@@ -137,7 +154,7 @@ export default function OnboardingFlow({ edit = false }: { edit?: boolean }) {
             className="flex-1 font-bold"
             disabled={!canNext}
             loading={saving}
-            onClick={() => (isLast ? save() : setStep((s) => s + 1))}
+            onClick={() => (isLast ? save() : update(step + 1, answers))}
           >
             {!isLast ? "다음" : saveError ? "다시 시도" : "할 일 만들기"}
           </Button>

@@ -86,7 +86,9 @@ export function validateDeathDate(value: string | undefined): string | null {
   if (!value || !/^\d{4}-\d{2}-\d{2}$/.test(value)) {
     return "날짜를 골라 주세요.";
   }
-  if (Number.isNaN(new Date(`${value}T00:00:00Z`).getTime())) {
+  // 2월 30일처럼 없는 날짜는 자바스크립트가 다음 달로 넘겨 버려서, 되돌려 비교해요.
+  const parsed = new Date(`${value}T00:00:00Z`);
+  if (Number.isNaN(parsed.getTime()) || parsed.toISOString().slice(0, 10) !== value) {
     return "올바른 날짜를 골라 주세요.";
   }
   if (value > todayKst()) {
