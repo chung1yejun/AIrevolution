@@ -1,23 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useId, useState } from "react";
 import { Button, Card, Checkbox, EmptyState, ErrorState, Loading, ProgressBar, Tag } from "@/components/ui";
+import { maskText } from "@/lib/mask";
+import { INQUIRY_RESULT_SAMPLE } from "@/lib/samples/inquiry-result";
 import type { AnalysisApplyRequest, AnalysisApplyResponse, AnalysisResponse, InstitutionType } from "@/lib/types";
 
-const sample = [
-  "안심상속 조회 결과 예시",
-  "신청인: 예시인 · 식별번호: 예시 전용",
-  "하늘은행 2건 · 든든생명 1건",
-  "차량등록사업소 1건",
-];
-
-const maskedSample = [
-  sample[0],
-  "신청인: *** · 식별번호: ******-*******",
-  sample[2],
-  sample[3],
-];
+const maskedText = maskText(INQUIRY_RESULT_SAMPLE);
 
 const typeLabels: Record<InstitutionType, string> = {
   bank: "은행",
@@ -41,14 +31,23 @@ async function post<T>(path: string, body: object, signal?: AbortSignal): Promis
   return response.json();
 }
 
-function SampleCard({ title, lines }: { title: string; lines: string[] }) {
+function SampleCard({ title, text }: { title: string; text: string }) {
+  const titleId = useId();
+
   return (
-    <Card className="space-y-3">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <h3 className="text-lg font-semibold">{title}</h3>
+    <Card className="flex h-[365px] flex-col gap-3">
+      <div className="flex shrink-0 flex-wrap items-center justify-between gap-2">
+        <h3 id={titleId} className="text-lg font-semibold">{title}</h3>
         <Tag variant="sample" />
       </div>
-      <p className="text-sm leading-7 whitespace-pre-line">{lines.join("\n")}</p>
+      <div
+        role="region"
+        aria-labelledby={titleId}
+        tabIndex={0}
+        className="min-h-0 flex-1 overflow-y-auto rounded-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--namgim-navy)]"
+      >
+        <p className="text-sm leading-7 whitespace-pre-line">{text}</p>
+      </div>
     </Card>
   );
 }
@@ -70,8 +69,9 @@ export function AnalysisFlow() {
     try {
       const data = await post<AnalysisResponse>(
         "/api/analysis",
-        { maskedText: maskedSample.join("\n") },
-        AbortSignal.timeout(20_000),
+        { maskedText },
+        // Allow the server to return its fallback after the 20-second Claude timeout.
+        AbortSignal.timeout(30_000),
       );
       setResult(data);
       setSelected(data.items.map(() => true));
@@ -106,7 +106,7 @@ export function AnalysisFlow() {
 
       {stage === "sample" && (
         <div className="space-y-4">
-          <Card className="space-y-3">
+          <Card className="min-h-32 space-y-3 py-6">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <h2 className="text-lg font-semibold">샘플 조회 결과</h2>
               <Tag variant="sample" />
@@ -128,13 +128,13 @@ export function AnalysisFlow() {
             </p>
           </div>
           <div className="grid gap-3 min-[1280px]:grid-cols-2">
-            <SampleCard title="원문 미리보기" lines={sample} />
-            <SampleCard title="가린 결과 미리보기" lines={maskedSample} />
+            <SampleCard title="원문 미리보기" text={INQUIRY_RESULT_SAMPLE} />
+            <SampleCard title="가린 결과 미리보기" text={maskedText} />
           </div>
           {stage === "analyzing" ? (
             <div className="space-y-2">
               <Loading />
-              <p className="text-sm text-[var(--namgim-muted)]">분석은 최대 20초 걸려요.</p>
+              <p className="text-sm text-[var(--namgim-muted)]">AI 분석은 최대 20초 걸려요.</p>
             </div>
           ) : failure === "analysis" ? (
             <ErrorState message="분석 결과를 불러오지 못했어요." onRetry={analyze} />
