@@ -209,7 +209,6 @@ export function AnalysisFlow() {
           <Card>
             <h2 className="text-lg font-semibold">{applied.added}개를 추가했어요</h2>
             {applied.skipped > 0 && <p className="mt-2">이미 추가한 {applied.skipped}개는 건너뛰었어요.</p>}
-            <p className="mt-2 text-sm">샘플 화면에서는 실제 할 일에 저장되지 않아요.</p>
           </Card>
           <Link href="/home" className="namgim-primary inline-flex min-h-14 w-full items-center justify-center rounded-2xl px-4 font-semibold min-[1280px]:max-w-xs">
             홈으로 가기
