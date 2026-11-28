@@ -1,5 +1,5 @@
 import { todayKst } from "@/app/onboarding/questions";
-import { fail, ok } from "@/lib/api";
+import { fail, ok, readJson, withApiErrors } from "@/lib/api";
 import { requireUser } from "@/lib/auth-server";
 import { extractInstitutions, InvalidFormatError, NoKeyError } from "@/lib/claude";
 import { maskText } from "@/lib/mask";
@@ -45,24 +45,24 @@ async function analyze(
   }
 }
 
-export async function POST(request: Request) {
-  const { user, response } = await requireUser();
-  if (response) return response;
+export const POST = withApiErrors(
+  async (request: Request) => {
+    const { user, response } = await requireUser();
+    if (response) return response;
 
-  const body: unknown = await request.json().catch(() => null);
-  const maskedText = body && typeof body === "object" && "maskedText" in body
-    ? body.maskedText
-    : null;
+    const body: unknown = await readJson(request);
+    const maskedText = body && typeof body === "object" && "maskedText" in body
+      ? body.maskedText
+      : null;
 
-  if (typeof maskedText !== "string" || !maskedText.trim() || maskedText.length > maxTextLength) {
-    return fail(400, "BAD_INPUT", "조회 결과를 1자 이상 20,000자 이하로 입력해 주세요.");
-  }
-  if (residentNumber.test(maskedText)) {
-    return fail(400, "BAD_INPUT", "개인정보를 가린 뒤 보내 주세요.");
-  }
+    if (typeof maskedText !== "string" || !maskedText.trim() || maskedText.length > maxTextLength) {
+      return fail(400, "BAD_INPUT", "조회 결과를 1자 이상 20,000자 이하로 입력해 주세요.");
+    }
+    if (residentNumber.test(maskedText)) {
+      return fail(400, "BAD_INPUT", "개인정보를 가린 뒤 보내 주세요.");
+    }
 
-  const supabase = await createClient();
-  try {
+    const supabase = await createClient();
     const result = await analyze(supabase, user.id, maskedText);
     const names = [...new Set(result.items.map(({ name }) => name))];
     const institutionIds = new Map<string, string>();
@@ -89,7 +89,6 @@ export async function POST(request: Request) {
 
     if (error) throw error;
     return ok<AnalysisResponse>({ ...result, items });
-  } catch {
-    return fail(500, "SERVER_ERROR", "분석 결과를 처리하지 못했어요. 다시 시도해 주세요.");
-  }
-}
+  },
+  "분석 결과를 처리하지 못했어요. 다시 시도해 주세요.",
+);

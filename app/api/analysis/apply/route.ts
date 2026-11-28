@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
 
-import { fail, ok } from "@/lib/api";
+import { fail, ok, readJson, withApiErrors } from "@/lib/api";
 import { requireUser } from "@/lib/auth-server";
 import { carDueDate } from "@/lib/rules";
 import { createClient } from "@/lib/supabase/server";
@@ -173,17 +173,16 @@ async function insertTasks(client: Client, userId: string, input: ApplyInput) {
   return { added, skipped: candidates.length - added };
 }
 
-export async function POST(request: Request) {
-  const { user, response } = await requireUser();
-  if (response) return response;
+export const POST = withApiErrors(
+  async (request: Request) => {
+    const { user, response } = await requireUser();
+    if (response) return response;
 
-  const input = parseInput(await request.json().catch(() => null));
-  if (!input) return fail(400, "BAD_INPUT", "추가할 기관을 1개부터 20개까지 선택해 주세요.");
+    const input = parseInput(await readJson(request));
+    if (!input) return fail(400, "BAD_INPUT", "추가할 기관을 1개부터 20개까지 선택해 주세요.");
 
-  try {
     const client = await createClient();
     return ok<AnalysisApplyResponse>(await insertTasks(client, user.id, input));
-  } catch {
-    return fail(500, "SERVER_ERROR", "할 일을 추가하지 못했어요. 다시 시도해 주세요.");
-  }
-}
+  },
+  "할 일을 추가하지 못했어요. 다시 시도해 주세요.",
+);

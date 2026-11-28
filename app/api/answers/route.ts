@@ -1,5 +1,5 @@
 import { QUESTIONS, todayKst } from "@/app/onboarding/questions";
-import { fail, ok } from "@/lib/api";
+import { fail, ok, readJson, withApiErrors } from "@/lib/api";
 import { requireUser } from "@/lib/auth-server";
 import { addMonths, buildRuleTasks } from "@/lib/rules";
 import { createClient } from "@/lib/supabase/server";
@@ -29,11 +29,11 @@ function isAnswers(body: unknown): body is Answers {
   );
 }
 
-export async function POST(request: Request) {
+export const POST = withApiErrors(async (request: Request) => {
   const { response } = await requireUser();
   if (response) return response;
 
-  const body: unknown = await request.json().catch(() => undefined);
+  const body: unknown = await readJson(request);
   if (!isAnswers(body)) {
     return fail(400, "BAD_INPUT", "답변과 별세일을 다시 확인해 주세요.");
   }
@@ -54,4 +54,4 @@ export async function POST(request: Request) {
   }
 
   return ok<AnswersResponse>({ ok: true, taskCount: data.taskCount });
-}
+});
