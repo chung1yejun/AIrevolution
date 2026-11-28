@@ -1,4 +1,4 @@
-import { fail, ok } from "@/lib/api";
+import { fail, ok, readJson, withApiErrors } from "@/lib/api";
 import { requireUser } from "@/lib/auth-server";
 import { createClient } from "@/lib/supabase/server";
 import type { TaskUpdateResponse } from "@/lib/types";
@@ -7,11 +7,11 @@ import { getTaskProgress } from "../progress";
 
 const uuid = /^[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i;
 
-export async function PATCH(request: Request, context: RouteContext<"/api/tasks/[id]">) {
+export const PATCH = withApiErrors(async (request: Request, context: RouteContext<"/api/tasks/[id]">) => {
   const { user, response } = await requireUser();
   if (response) return response;
 
-  const body: unknown = await request.json().catch(() => undefined);
+  const body: unknown = await readJson(request);
   if (!body || typeof body !== "object" || !("done" in body) || typeof body.done !== "boolean") {
     return fail(400, "BAD_INPUT", "완료 여부를 보내 주세요.");
   }
@@ -46,4 +46,4 @@ export async function PATCH(request: Request, context: RouteContext<"/api/tasks/
     doneAt: task.done_at,
     progress: getTaskProgress(tasks),
   });
-}
+});

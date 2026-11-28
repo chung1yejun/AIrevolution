@@ -1,4 +1,4 @@
-import { fail, ok } from "@/lib/api";
+import { fail, ok, withApiErrors } from "@/lib/api";
 import { requireUser } from "@/lib/auth-server";
 import { dDay } from "@/lib/rules";
 import { createClient } from "@/lib/supabase/server";
@@ -18,7 +18,7 @@ type TaskRow = Pick<Task, "id" | "title" | "done" | "source"> & {
   needs_expert: boolean;
 };
 
-export async function GET() {
+export const GET = withApiErrors(async () => {
   const { user, response } = await requireUser();
   if (response) return response;
 
@@ -90,4 +90,4 @@ export async function GET() {
     progress: getTaskProgress(tasks),
     tasks,
   });
-}
+});
